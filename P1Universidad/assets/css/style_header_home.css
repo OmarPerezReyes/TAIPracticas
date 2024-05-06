@@ -1,0 +1,38 @@
+        body {
+            background-color: #f8f9fa;
+            /* Color de fondo */
+            color: #343a40;
+            /* Color de texto */
+        }
+
+        .navbar {
+            background-color: #343a40;
+            /* Color de fondo de la barra de navegación */
+        }
+
+        .navbar-brand {
+            color: #ffffff;
+            /* Color del texto del enlace en la barra de navegación */
+            font-weight: bold;
+        }
+
+        .nav-link {
+            color: black;
+            /* Color del texto del enlace en la barra de navegación */
+        }
+
+        .nav-link:hover {
+            background-color: #5f6368;
+            /* Color de fondo al pasar el cursor por encima */
+            color: white !important;
+            /* Color del texto del enlace en la barra de navegación */
+        }
+
+        .container {
+            margin-top: 50px;
+            /* Espacio superior */
+        }
+
+        .nav-tabs .nav-item {
+            display: inline-block;
+        }

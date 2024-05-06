@@ -10,9 +10,9 @@ class admin_controller {
     }
 
     function index(){
-        include_once('views/header.php');
-        include_once('views/index.php');
-        include_once('views/footer.php');
+        include_once('views/login/header.php');
+        include_once('views/login/index.php');
+        include_once('views/login/footer.php');
     }
 
     public function iniciar_sesion() {
@@ -23,7 +23,7 @@ class admin_controller {
         if ($data) {
             session_start();
             $_SESSION['nombre'] = $data['nombre']; // Establecer la sesión del usuario
-            include_once('views/mensaje.php');
+            include_once('views/home.php');
         } else {
             echo "Credenciales incorrectas. Sesión rechazada.";
         }
@@ -44,16 +44,22 @@ class admin_controller {
         }
         else{
             $data = false;
-            include_once('views/registro.php');
-            include_once('views/footer.php');
+            include_once('views/login/registro.php');
+            include_once('views/login/footer.php');
         }
     }
 
     public function cerrar_sesion() {
-        session_start();
-        session_unset(); // Eliminar todas las variables de sesión
-        session_destroy(); // Destruir la sesión
-        header("Location: index.php"); // Redirigir al usuario a la página de inicio
+        session_start(); // Iniciar la sesión al principio del archivo
+
+        // Destruir todas las variables de sesión
+        session_unset();
+
+        // Destruir la sesión
+        session_destroy();
+
+        // Redirigir al usuario a la página de inicio
+        header("Location: index.php");
         exit;
     }
 }
