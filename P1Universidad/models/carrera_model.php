@@ -1,8 +1,8 @@
 <?php
     
-class universidad_model{
+class carrera_model{
     private $DB;
-    private $universidades;
+    private $carreras;
 
     function __construct(){
         try {
@@ -16,53 +16,57 @@ class universidad_model{
         }
     }
 
-    // Método para obtener todas las universidades
-    function get(){
-        $sql= 'SELECT * FROM universidad ';
-        // Ejecutar la consulta SQL
-        $fila=$this->DB->query($sql);
-        // Guardar el resultado en la propiedad $universidades
-        $this->universidades=$fila;
-        // Retornar el resultado
-        return  $this->universidades;
-    }
+   // Método para obtener todas las carreras con el nombre de la universidad
+function get(){
+    $sql= 'SELECT carrera.*, universidad.nombre AS nombre_universidad 
+            FROM carrera 
+            INNER JOIN universidad ON carrera.id_universidad = universidad.id';
+    // Ejecutar la consulta SQL
+    $fila=$this->DB->query($sql);
+    // Guardar el resultado en la propiedad $carreras
+    $this->carreras=$fila;
+    // Retornar el resultado
+    return  $this->carreras;
+}
 
-    // Método para crear una nueva universidad
+
+    // Método para crear una nueva carrera
     function create($data){
         // Preparar la consulta SQL
-        $sql="INSERT INTO universidad(nombre,direccion,tipo) VALUES (?,?,?)";
+        $sql="INSERT INTO carrera(nombre,id_universidad) VALUES (?,?)";
         // Ejecutar la consulta SQL
         $query = $this->DB->prepare($sql);
-        $query->execute(array($data['nombre'],$data['direccion'],$data['tipo']));
+        $data['universidad'] = intval($data['universidad']);
+        $query->execute(array($data['nombre'], $data['universidad']));
         // Cerrar la conexión a la base de datos
         Database::disconnect();       
     }
 
-    // Método para obtener los datos de una universidad por su ID
+    // Método para obtener los datos de una carrera por su ID
     function get_id($id){
-        $sql = "SELECT * FROM universidad WHERE id = ?";
+        $sql = "SELECT * FROM carrera WHERE id = ?";
         $stmt = $this->DB->prepare($sql);
         $stmt->bind_param("i", $id); // "i" indica que el parámetro es un entero
         $stmt->execute();
         $result = $stmt->get_result();
-        // Obtener los datos de la universidad
+        // Obtener los datos de la carrera
         $data = $result->fetch_assoc();
         // Retornar los datos
         return $data;
     }
 
-    // Método para actualizar los datos de una universidad
+    // Método para actualizar los datos de una carrera
     function update($data){
-        $sql = "UPDATE universidad set nombre=?, direccion =?, tipo=? WHERE id = ? ";
+        $sql = "UPDATE carrera set nombre=?, id_universidad =? WHERE id = ? ";
         $q = $this->DB->prepare($sql);
-        $q->execute(array($data['nombre'],$data['direccion'],$data['tipo'],$data['id']));
+        $q->execute(array($data['nombre'],$data['universidad'],$data['id']));
         // Cerrar la conexión a la base de datos
         Database::disconnect();
     }
 
-    // Método para eliminar una universidad por su ID
+    // Método para eliminar una carrera por su ID
     function delete($id){
-        $sql="DELETE FROM universidad where id=?";
+        $sql="DELETE FROM carrera where id=?";
         $q=$this->DB->prepare($sql);
         $q->execute(array($id));
         // Cerrar la conexión a la base de datos

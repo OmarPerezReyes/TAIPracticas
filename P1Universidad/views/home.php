@@ -1,16 +1,14 @@
 
 <?php
-session_start();
-
-   
+    session_start();
     define('BASE_URL', 'http://perezomar.me/TAIPracticas/P1Universidad/');
     define('BASE_PATH', '/var/www/html/TAIPracticas/P1Universidad/');
- // Verificar si no hay una sesión iniciada
- if (!isset($_SESSION['nombre'])) {
-    // Redireccionar al usuario a la página de inicio de sesión
-    header("Location: http://perezomar.me/TAIPracticas/P1Universidad/index.php"); 
-    exit;
-}
+    // Verificar si no hay una sesión iniciada
+    if (!isset($_SESSION['nombre'])) {
+        // Redireccionar al usuario a la página de inicio de sesión
+        header("Location: http://perezomar.me/TAIPracticas/P1Universidad/index.php"); 
+        exit;
+    }
 
 ?>
 <!DOCTYPE html>
@@ -43,21 +41,26 @@ session_start();
         </li>
     </ul>
     <?php
+        // Verificar si los parámetros 'controller' y 'action' están presentes en la solicitud
+        if (isset($_GET['controller']) && isset($_GET['action'])) {
+            // Obtener el nombre del controlador y la acción desde los parámetros de la solicitud
+            $controller = $_GET['controller'];
+            $action = $_GET['action'];
 
+            // Incluir el archivo de conexión a la base de datos
+            require_once(BASE_PATH . 'bd/Connection.php');
 
-            if (isset($_GET['controller']) && isset($_GET['action'])) {
-                $controller = $_GET['controller'];
-                $action = $_GET['action'];
+            // Incluir el archivo del controlador correspondiente
+            require_once(BASE_PATH . "controllers/$controller.php");
 
-                require_once(BASE_PATH . 'bd/Connection.php');
+            // Instanciar el objeto del controlador
+            $controller = new $controller();
 
-                require_once(BASE_PATH . "controllers/$controller.php");
+            // Llamar a la acción especificada en el controlador
+            $controller->$action();
+        }
+    ?>
 
-                $controller = new $controller();
-
-                $controller->$action();
-            }
-        ?>
 </div>
 
 <script src="https://code.jquery.com/jquery.min.js"></script>
