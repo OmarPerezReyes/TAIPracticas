@@ -22,8 +22,8 @@
                         <thead>
                             <tr>
                                 <th>S#</th>
-                                <th>Name</th>
-                                <th>Action</th>
+                                <th>Nombre</th>
+                                <th>Acción</th>
                             </tr>
                         </thead>
                         <tbody>

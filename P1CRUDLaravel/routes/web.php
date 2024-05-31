@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\InventarioController;
 
 // Ruta para la página de bienvenida
 Route::get('/', function () {
@@ -36,8 +37,12 @@ Route::middleware('auth')->group(function () {
     // Rutas para las categorias (CRUD)
     Route::resource('categorias', CategoriaController::class);
 
-    // Rutas para las clientes (CRUD)
+    // Rutas para los clientes (CRUD)
     Route::resource('clientes', ClienteController::class);
+    
+    // Rutas para el inventario (CRUD y buscador)
+    Route::resource('inventario', InventarioController::class);
+
 
     // Rutas para el perfil del usuario (editar, actualizar y eliminar)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

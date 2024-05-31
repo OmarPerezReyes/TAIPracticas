@@ -34,8 +34,9 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
-    }
+// Redireccionar de vuelta a la lista de inventario con un mensaje de éxito
+return redirect()->route('inventario.index')
+->withSuccess('Nuevo movimiento registrado.');    }
 
     /**
      * Delete the user's account.

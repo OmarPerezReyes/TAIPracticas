@@ -27,8 +27,8 @@ class CategoriaController extends Controller
     {
         return view('categorias.create');
     }
-
-    /**
+ /**
+    
      * Almacena una nueva categoría en la base de datos.
      */
     public function store(Request $request) : RedirectResponse
