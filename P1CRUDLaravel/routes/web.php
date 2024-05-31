@@ -3,7 +3,8 @@
 // Importamos los controladores necesarios
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\CategoriaController;
 
 // Ruta para la página de bienvenida
 Route::get('/', function () {
@@ -29,7 +30,10 @@ Route::get('/contact', function () {
 Route::middleware('auth')->group(function () {
 
     // Rutas para los productos (CRUD)
-    Route::resource('products', ProductController::class);
+    Route::resource('productos', ProductoController::class);
+
+    // Rutas para las categorias (CRUD)
+    Route::resource('categorias', CategoriaController::class);
 
     // Rutas para el perfil del usuario (editar, actualizar y eliminar)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
