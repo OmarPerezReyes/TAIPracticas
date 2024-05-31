@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categoria;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -79,17 +80,35 @@ class CategoriaController extends Controller
                 ->withSuccess('Categoría actualizada correctamente.');
     }
 
+
+
     /**
      * Elimina una categoría existente de la base de datos.
      */
     public function destroy(Categoria $categoria) : RedirectResponse
     {
-        // Eliminar la categoría
+        // Verificar si la categoría tiene productos asociados
+        if ($categoria->productos()->exists()) {
+            // Mostrar un mensaje emergente de confirmación en el frontend (NO HE PODIDO MOSTRARLO)
+            return back()->with('confirm-delete', true);
+        }
+    
+        // Si la categoría no tiene productos asociados, eliminarla directamente
         $categoria->delete();
-
+    
         // Redireccionar de vuelta a la lista de categorías con un mensaje de éxito
         return redirect()->route('categorias.index')
                 ->withSuccess('Categoría eliminada correctamente.');
     }
+    
+    
+/**
+     * Obtiene los productos asociados a la categoría.
+     */
+    public function productos()
+    {
+        return $this->hasMany(Producto::class, 'id_categoria');
+    }
+
 }
 
