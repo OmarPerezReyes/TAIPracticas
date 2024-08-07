@@ -74,7 +74,7 @@ class CustomerController extends Controller
             $validatedData['photo'] = $fileName;
     
             // Mostrar los datos después de manejar la imagen
-            dd($validatedData);
+            //dd($validatedData);
         }
     
         $customer = Customer::create($validatedData);

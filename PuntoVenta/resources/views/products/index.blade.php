@@ -22,14 +22,12 @@
             @endif
             <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
                 <div>
-                    <h4 class="mb-3">Product List</h4>
-                    <p class="mb-0">A product dashboard lets you easily gather and visualize product data from optimizing <br>
-                        the product experience, ensuring product retention. </p>
+                    <h4 class="mb-3">Inventario</h4>
                 </div>
                 <div>
-                <a href="{{ route('products.importView') }}" class="btn btn-success add-list">Import</a>
-                <a href="{{ route('products.exportData') }}" class="btn btn-warning add-list">Export</a>
-                <a href="{{ route('products.create') }}" class="btn btn-primary add-list">Add Product</a>
+                <!--<a href="{{ route('products.importView') }}" class="btn btn-success add-list">Import</a>-->
+                <a href="{{ route('products.exportData') }}" class="btn btn-warning add-list">Exportar</a>
+                <a href="{{ route('products.create') }}" class="btn btn-primary add-list">Agregar producto</a>
                 </div>
             </div>
         </div>
@@ -50,9 +48,9 @@
                     </div>
 
                     <div class="form-group row">
-                        <label class="control-label col-sm-3 align-self-center" for="search">Search:</label>
+                        <label class="control-label col-sm-3 align-self-center" for="search">Buscar:</label>
                         <div class="input-group col-sm-8">
-                            <input type="text" id="search" class="form-control" name="search" placeholder="Search product" value="{{ request('search') }}">
+                            <input type="text" id="search" class="form-control" name="search" placeholder="Buscar producto" value="{{ request('search') }}">
                             <div class="input-group-append">
                                 <button type="submit" class="input-group-text bg-primary"><i class="fa-solid fa-magnifying-glass font-size-20"></i></button>
                                 <a href="{{ route('products.index') }}" class="input-group-text bg-danger"><i class="fa-solid fa-trash"></i></a>
@@ -74,7 +72,7 @@
                             <th>@sortablelink('category.name', 'category')</th>
                             <th>@sortablelink('supplier.name', 'supplier')</th>
                             <th>@sortablelink('selling_price', 'price')</th>
-                            <th>Status</th>
+                            <!--<th>Status</th>-->
                             <th>Stock</th>
                             <th>Action</th>
                         </tr>
@@ -90,13 +88,13 @@
                             <td>{{ $product->category->name }}</td>
                             <td>{{ $product->supplier->name }}</td>
                             <td>{{ $product->selling_price }}</td>
-                            <td>
+                           <!-- <td>
                                 @if ($product->expire_date > Carbon\Carbon::now()->format('Y-m-d'))
                                     <span class="badge rounded-pill bg-success">Valid</span>
                                 @else
                                     <span class="badge rounded-pill bg-danger">Invalid</span>
                                 @endif
-                            </td>
+                            </td>-->
                             <td>
                                 <span class="btn btn-warning text-white mr-2">{{ $product->product_store }}</span>
                             </td>
@@ -119,7 +117,7 @@
 
                         @empty
                         <div class="alert text-white bg-danger" role="alert">
-                            <div class="iq-alert-text">Data not Found.</div>
+                            <div class="iq-alert-text">No hay datos.</div>
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <i class="ri-close-line"></i>
                             </button>
