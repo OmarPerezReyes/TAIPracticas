@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Stock;
 use App\Models\Product;
+use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Xls;
+
 
 class StockController extends Controller
 {
@@ -62,4 +67,57 @@ class StockController extends Controller
 
         return redirect()->route('stocks.index')->with('success', 'Movimiento de stock agregado exitosamente.');
     }
+
+     // Método para exportar datos de stock a Excel
+     public function exportData(Request $request)
+     {
+         $stocks = Stock::with('product')
+             ->filter($request->only('search'))
+             ->sortable()
+             ->get(); // Obtén todos los datos en lugar de paginados
+ 
+         $stock_array[] = [
+             'ID',
+             'Producto',
+             'Fecha',
+             'Movimiento',
+             'Motivo',
+             'Cantidad',
+         ];
+ 
+         foreach ($stocks as $stock) {
+             $stock_array[] = [
+                 $stock->id,
+                 $stock->product->product_name,
+                 Carbon::parse($stock->date)->format('Y-m-d'), // Conversión manual
+                 ucfirst($stock->movement),
+                 $stock->reason,
+                 $stock->quantity,
+             ];
+         }
+ 
+         return $this->exportExcel($stock_array);
+     }
+ 
+     // Método para exportar a Excel
+     public function exportExcel($data)
+     {
+         ini_set('max_execution_time', 0);
+         ini_set('memory_limit', '4000M');
+ 
+         try {
+             $spreadSheet = new Spreadsheet();
+             $spreadSheet->getActiveSheet()->fromArray($data);
+             $spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+             $Excel_writer = new Xlsx($spreadSheet);
+             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+             header('Content-Disposition: attachment;filename="Stock_ExportedData.xlsx"');
+             header('Cache-Control: max-age=0');
+             ob_end_clean();
+             $Excel_writer->save('php://output');
+             exit();
+         } catch (\Exception $e) {
+             return redirect()->route('stocks.index')->with('error', 'Error al exportar los datos.');
+         }
+     }
 }

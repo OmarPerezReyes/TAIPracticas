@@ -8,9 +8,6 @@ use App\Http\Controllers\Dashboard\CustomerController;
 use App\Http\Controllers\Dashboard\EmployeeController;
 use App\Http\Controllers\Dashboard\SupplierController;
 use App\Http\Controllers\Dashboard\DashboardController;
-use App\Http\Controllers\Dashboard\PaySalaryController;
-use App\Http\Controllers\Dashboard\AttendenceController;
-use App\Http\Controllers\Dashboard\AdvanceSalaryController;
 use App\Http\Controllers\Dashboard\DatabaseBackupController;
 use App\Http\Controllers\Dashboard\OrderController;
 use App\Http\Controllers\Dashboard\PosController;
@@ -54,6 +51,8 @@ Route::middleware(['permission:customer.menu'])->group(function () {
     Route::resource('/customers', CustomerController::class);
 });
 
+Route::get('/customers/export', [CustomerController::class, 'exportData'])->name('customers.exportData');
+
 // ====== SUPPLIERS ======
 Route::middleware(['permission:supplier.menu'])->group(function () {
     Route::resource('/suppliers', SupplierController::class);
@@ -64,22 +63,7 @@ Route::middleware(['permission:employee.menu'])->group(function () {
     Route::resource('/employees', EmployeeController::class);
 });
 
-// ====== EMPLOYEE ATTENDENCE ======
-Route::middleware(['permission:attendence.menu'])->group(function () {
-    Route::resource('/employee/attendence', AttendenceController::class)->except(['show', 'update', 'destroy']);
-});
 
-// ====== SALARY EMPLOYEE ======
-Route::middleware(['permission:salary.menu'])->group(function () {
-    // PaySalary
-    Route::resource('/pay-salary', PaySalaryController::class)->except(['show', 'create', 'edit', 'update']);
-    Route::get('/pay-salary/history', [PaySalaryController::class, 'payHistory'])->name('pay-salary.payHistory');
-    Route::get('/pay-salary/history/{id}', [PaySalaryController::class, 'payHistoryDetail'])->name('pay-salary.payHistoryDetail');
-    Route::get('/pay-salary/{id}', [PaySalaryController::class, 'paySalary'])->name('pay-salary.paySalary');
-
-    // Advance Salary
-    Route::resource('/advance-salary', AdvanceSalaryController::class)->except(['show']);
-});
 
 // ====== PRODUCTS ======
 Route::middleware(['permission:product.menu'])->group(function () {
@@ -92,22 +76,17 @@ Route::middleware(['permission:product.menu'])->group(function () {
 
 
 Route::get('/products/manage-stock', [ProductController::class, 'manageStock'])->name('products.manageStock');
-
 Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
 Route::get('/stock/manage', [StockController::class, 'manage'])->name('stock.manage');
 Route::post('/stock', [StockController::class, 'store'])->name('stock.store');
 // Ruta para el índice de stock
 Route::resource('stocks', StockController::class);
-
 Route::resource('stocks', StockController::class)->middleware('can:pos.menu');
-
-
-// Ruta para el índice de stock
+Route::get('/stock/export', [StockController::class, 'exportData'])->name('stock.exportData');
+// Ruta para el índice de stocK
 Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
-
 // Ruta para el formulario de crear movimiento de stock
 Route::post('/stock', [StockController::class, 'store'])->name('stock.store');
-
 
 
 // ====== CATEGORY PRODUCTS ======

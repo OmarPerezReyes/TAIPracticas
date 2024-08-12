@@ -23,9 +23,10 @@
             @endif
             <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
                 <div>
-                    <h4 class="mb-3">Movimientos de Stock</h4>
+                    <h4 class="mb-3">Movimientos </h4>
                 </div>
                 <div>
+                    <a href="{{ route('stock.exportData') }}" class="btn btn-warning add-list">Exportar</a>
                     <a href="{{ route('stock.manage') }}" class="btn btn-primary add-list">Agregar Movimiento</a>
                 </div>
             </div>

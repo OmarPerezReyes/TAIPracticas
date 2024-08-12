@@ -5,7 +5,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
-            <h4 class="mb-3">Agregar Movimiento de Stock</h4>
+            <h4 class="mb-3">Registrar Movimiento </h4>
             <form action="{{ route('stock.store') }}" method="post">
                 @csrf
                 <div class="form-group">

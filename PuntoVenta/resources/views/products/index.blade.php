@@ -25,7 +25,6 @@
                     <h4 class="mb-3">Inventario</h4>
                 </div>
                 <div>
-                <!--<a href="{{ route('products.importView') }}" class="btn btn-success add-list">Import</a>-->
                 <a href="{{ route('products.exportData') }}" class="btn btn-warning add-list">Exportar</a>
                 <a href="{{ route('products.create') }}" class="btn btn-primary add-list">Agregar producto</a>
                 </div>

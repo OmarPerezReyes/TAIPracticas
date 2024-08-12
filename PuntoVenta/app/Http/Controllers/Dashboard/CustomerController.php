@@ -9,6 +9,7 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
 
+
 class CustomerController extends Controller
 {
     /**
@@ -167,4 +168,74 @@ class CustomerController extends Controller
 
         return Redirect::route('customers.index')->with('success', 'Customer has been deleted!');
     }
+
+
+    // Update to handle customer data
+public function exportExcel($data, $headers)
+{
+    ini_set('max_execution_time', 0);
+    ini_set('memory_limit', '4000M');
+
+    try {
+        $spreadSheet = new Spreadsheet();
+        $sheet = $spreadSheet->getActiveSheet();
+        
+        // Set default column width
+        $sheet->getDefaultColumnDimension()->setWidth(20);
+
+        // Add headers
+        $sheet->fromArray($headers, null, 'A1');
+
+        // Add data
+        $sheet->fromArray($data, null, 'A2');
+
+        $Excel_writer = new Xls($spreadSheet);
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="Customers_ExportedData.xls"');
+        header('Cache-Control: max-age=0');
+        ob_end_clean();
+        $Excel_writer->save('php://output');
+        exit();
+    } catch (Exception $e) {
+        return;
+    }
+}
+
+// Update to reflect customer fields
+function exportData()
+{
+    $customers = Customer::all()->sortByDesc('id');
+
+    $headers = [
+        'No.',
+        'Photo',
+        'Name',
+        'Email',
+        'Phone',
+        'RFC',
+        'Razon Social',
+        'Codigo Postal',
+        'Regimen Fiscal'
+    ];
+
+    $data = [];
+
+    foreach ($customers as $customer) {
+        $data[] = [
+            (($customers->currentPage() * 10) - 10) + $loop->iteration,
+            $customer->photo ? asset('storage/customers/'.$customer->photo) : asset('assets/images/user/1.png'),
+            $customer->name,
+            $customer->email,
+            $customer->phone,
+            $customer->RFC,
+            $customer->razon_social,
+            $customer->codigo_postal,
+            $customer->regimen_fiscal,
+        ];
+    }
+
+    // Pass data and headers to exportExcel
+    $this->exportExcel($data, $headers);
+}
+
 }
