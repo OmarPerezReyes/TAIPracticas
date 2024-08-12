@@ -20,15 +20,14 @@
                     </a>
                 </li>
 
-                @if (auth()->user()->can('pos.menu'))
+               <!-- @if (auth()->user()->can('pos.menu'))
                 <li class="{{ Request::is('pos*') ? 'active' : '' }}">
                     <a href="{{ route('pos.index') }}" class="svg-icon">
                         <i class="fa-solid fa-cart-shopping"></i>
                         <span class="ml-3">Venta</span>
                     </a>
                 </li>
-                @endif
-
+                @endif-->
                 <hr>
 
                

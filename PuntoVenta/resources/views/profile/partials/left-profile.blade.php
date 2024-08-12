@@ -7,7 +7,6 @@
                 </div>
                 <div class="ml-3">
                     <h4 class="mb-1">{{  auth()->user()->name }}</h4>
-                    <p class="mb-2">UI/UX Designer</p>
                     <a href="#" class="btn btn-primary font-size-14">Edit Profile</a>
                 </div>
             </div>
