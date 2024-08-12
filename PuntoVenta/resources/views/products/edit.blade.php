@@ -19,8 +19,8 @@
 
                 <div class="card-body">
                     <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    @method('put')
+                        @csrf
+                        @method('put')
                         <!-- begin: Input Image -->
                         <div class="form-group row align-items-center">
                             <div class="col-md-12">
@@ -36,7 +36,7 @@
                             <div class="input-group mb-4 col-lg-6">
                                 <div class="custom-file">
                                     <input type="file" class="custom-file-input @error('product_image') is-invalid @enderror" id="image" name="product_image" accept="image/*" onchange="previewImage();">
-                                    <label class="custom-file-label" for="product_image">Choose file</label>
+                                    <label class="custom-file-label" for="product_image">Elegir archivo</label>
                                 </div>
                                 @error('product_image')
                                 <div class="invalid-feedback">
@@ -46,8 +46,9 @@
                             </div>
                         </div>
                         <!-- end: Input Image -->
+
                         <!-- begin: Input Data -->
-                        <div class=" row align-items-center">
+                        <div class="row align-items-center">
                             <div class="form-group col-md-12">
                                 <label for="product_name">Nombre del producto <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('product_name') is-invalid @enderror" id="product_name" name="product_name" value="{{ old('product_name', $product->product_name) }}" required>
@@ -58,9 +59,9 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="category_id">Categoria <span class="text-danger">*</span></label>
-                                <select class="form-control" name="category_id" required>
-                                    <option selected="" disabled>-- Selecciona la categoria --</option>
+                                <label for="category_id">Categoría <span class="text-danger">*</span></label>
+                                <select class="form-control @error('category_id') is-invalid @enderror" name="category_id" required>
+                                    <option value="" disabled>-- Selecciona la categoría --</option>
                                     @foreach ($categories as $category)
                                         <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                     @endforeach
@@ -72,9 +73,9 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="supplier_id">Vendedor <span class="text-danger">*</span></label>
-                                <select class="form-control" name="supplier_id" required>
-                                    <option selected="" disabled>-- Selecciona al vendedor --</option>
+                                <label for="supplier_id">Proveedor <span class="text-danger">*</span></label>
+                                <select class="form-control @error('supplier_id') is-invalid @enderror" name="supplier_id" required>
+                                    <option value="" disabled>-- Selecciona el proveedor --</option>
                                     @foreach ($suppliers as $supplier)
                                         <option value="{{ $supplier->id }}" {{ old('supplier_id', $product->supplier_id) == $supplier->id ? 'selected' : '' }}>{{ $supplier->name }}</option>
                                     @endforeach
@@ -86,18 +87,9 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="product_garage">Producto en almacén</label>
+                                <label for="product_garage">Cantidad en almacén</label>
                                 <input type="text" class="form-control @error('product_garage') is-invalid @enderror" id="product_garage" name="product_garage" value="{{ old('product_garage', $product->product_garage) }}">
                                 @error('product_garage')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                                @enderror
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="product_store">Producto en venta</label>
-                                <input type="text" class="form-control @error('product_store') is-invalid @enderror" id="product_store" name="product_store" value="{{ old('product_store', $product->product_store) }}">
-                                @error('product_store')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
@@ -142,8 +134,8 @@
                         </div>
                         <!-- end: Input Data -->
                         <div class="mt-2">
-                            <button type="submit" class="btn btn-primary mr-2">Save</button>
-                            <a class="btn bg-danger" href="{{ route('products.index') }}">Cancel</a>
+                            <button type="submit" class="btn btn-primary mr-2">Guardar</button>
+                            <a class="btn bg-danger" href="{{ route('products.index') }}">Cancelar</a>
                         </div>
                     </form>
                 </div>
@@ -157,12 +149,10 @@
     $('#buying_date').datepicker({
         uiLibrary: 'bootstrap4',
         format: 'yyyy-mm-dd'
-        // https://gijgo.com/datetimepicker/configuration/format
     });
     $('#expire_date').datepicker({
         uiLibrary: 'bootstrap4',
         format: 'yyyy-mm-dd'
-        // https://gijgo.com/datetimepicker/configuration/format
     });
 </script>
 

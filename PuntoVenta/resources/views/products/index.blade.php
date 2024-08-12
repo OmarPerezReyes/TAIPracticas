@@ -14,7 +14,7 @@
             @endif
             @if (session()->has('error'))
                 <div class="alert text-white bg-danger" role="alert">
-                    <div class="iq-alert-text">{{ session('success') }}</div>
+                    <div class="iq-alert-text">{{ session('error') }}</div>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <i class="ri-close-line"></i>
                     </button>
@@ -25,7 +25,7 @@
                     <h4 class="mb-3">Inventario</h4>
                 </div>
                 <div>
-                <!--<a href="{{ route('products.importView') }}" class="btn btn-success add-list">Import</a>-->
+                <!--<a href="{{ route('products.importView') }}" class="btn btn-success add-list">Importar</a>-->
                 <a href="{{ route('products.exportData') }}" class="btn btn-warning add-list">Exportar</a>
                 <a href="{{ route('products.create') }}" class="btn btn-primary add-list">Agregar producto</a>
                 </div>
@@ -36,7 +36,7 @@
             <form action="{{ route('products.index') }}" method="get">
                 <div class="d-flex flex-wrap align-items-center justify-content-between">
                     <div class="form-group row">
-                        <label for="row" class="col-sm-3 align-self-center">Row:</label>
+                        <label for="row" class="col-sm-3 align-self-center">Fila:</label>
                         <div class="col-sm-9">
                             <select class="form-control" name="row">
                                 <option value="10" @if(request('row') == '10')selected="selected"@endif>10</option>
@@ -67,20 +67,19 @@
                     <thead class="bg-white text-uppercase">
                         <tr class="ligth ligth-data">
                             <th>No.</th>
-                            <th>Photo</th>
-                            <th>@sortablelink('product_name', 'name')</th>
-                            <th>@sortablelink('category.name', 'category')</th>
-                            <th>@sortablelink('supplier.name', 'supplier')</th>
-                            <th>@sortablelink('selling_price', 'price')</th>
-                            <!--<th>Status</th>-->
+                            <th>Foto</th>
+                            <th>@sortablelink('product_name', 'Nombre')</th>
+                            <th>@sortablelink('category.name', 'Categoría')</th>
+                            <th>@sortablelink('supplier.name', 'Proveedor')</th>
+                            <th>@sortablelink('selling_price', 'Precio')</th>
                             <th>Stock</th>
-                            <th>Action</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="ligth-body">
                         @forelse ($products as $product)
                         <tr>
-                            <td>{{ (($products->currentPage() * 10) - 10) + $loop->iteration  }}</td>
+                            <td>{{ (($products->currentPage() - 1) * $products->perPage()) + $loop->iteration }}</td>
                             <td>
                                 <img class="avatar-60 rounded" src="{{ $product->product_image ? asset('storage/products/'.$product->product_image) : asset('assets/images/product/default.webp') }}">
                             </td>
@@ -88,28 +87,21 @@
                             <td>{{ $product->category->name }}</td>
                             <td>{{ $product->supplier->name }}</td>
                             <td>{{ $product->selling_price }}</td>
-                           <!-- <td>
-                                @if ($product->expire_date > Carbon\Carbon::now()->format('Y-m-d'))
-                                    <span class="badge rounded-pill bg-success">Valid</span>
-                                @else
-                                    <span class="badge rounded-pill bg-danger">Invalid</span>
-                                @endif
-                            </td>-->
                             <td>
-                                <span class="btn btn-warning text-white mr-2">{{ $product->product_store }}</span>
+                                <span class="btn btn-warning text-white mr-2">{{ $product->product_garage }}</span>
                             </td>
                             <td>
                                 <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="margin-bottom: 5px">
                                     @method('delete')
                                     @csrf
                                     <div class="d-flex align-items-center list-action">
-                                        <a class="btn btn-info mr-2" data-toggle="tooltip" data-placement="top" title="" data-original-title="View"
+                                        <a class="btn btn-info mr-2" data-toggle="tooltip" data-placement="top" title="Ver"
                                             href="{{ route('products.show', $product->id) }}"><i class="ri-eye-line mr-0"></i>
                                         </a>
-                                        <a class="btn btn-success mr-2" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"
-                                            href="{{ route('products.edit', $product->id) }}""><i class="ri-pencil-line mr-0"></i>
+                                        <a class="btn btn-success mr-2" data-toggle="tooltip" data-placement="top" title="Editar"
+                                            href="{{ route('products.edit', $product->id) }}"><i class="ri-pencil-line mr-0"></i>
                                         </a>
-                                            <button type="submit" class="btn btn-warning mr-2 border-none" onclick="return confirm('Are you sure you want to delete this record?')" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"><i class="ri-delete-bin-line mr-0"></i></button>
+                                        <button type="submit" class="btn btn-warning mr-2 border-none" onclick="return confirm('¿Estás seguro de que deseas eliminar este registro?')" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="ri-delete-bin-line mr-0"></i></button>
                                     </div>
                                 </form>
                             </td>

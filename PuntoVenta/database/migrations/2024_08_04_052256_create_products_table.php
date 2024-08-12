@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('product_code')->nullable();
             $table->string('product_garage')->nullable();
             $table->string('product_image')->nullable();
-            $table->integer('product_store')->nullable();
+            $table->text('short_description')->nullable(); // Nueva columna para descripción corta
+            $table->text('long_description')->nullable();  // Nueva columna para descripción larga
             $table->date('buying_date')->nullable();
             $table->string('expire_date')->nullable();
             $table->integer('buying_price')->nullable();

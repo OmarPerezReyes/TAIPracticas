@@ -46,7 +46,7 @@
                         </div>
                         <!-- end: Input Image -->
                         <!-- begin: Input Data -->
-                        <div class=" row align-items-center">
+                        <div class="row align-items-center">
                             <div class="form-group col-md-12">
                                 <label for="product_name">Nombre del producto <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('product_name') is-invalid @enderror" id="product_name" name="product_name" value="{{ old('product_name') }}" required>
@@ -73,9 +73,9 @@
                             <div class="form-group col-md-6">
                                 <label for="supplier_id">Vendedor <span class="text-danger">*</span></label>
                                 <select class="form-control" name="supplier_id" required>
-                                    <option selected="" disabled>-- Selecciona al vendedor --</option>
+                                    <option selected="" disabled>-- Selecciona al proveedor --</option>
                                     @foreach ($suppliers as $supplier)
-                                        <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }} }}>{{ $supplier->name }}</option>
+                                        <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>{{ $supplier->name }}</option>
                                     @endforeach
                                 </select>
                                 @error('supplier_id')
@@ -85,7 +85,7 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="product_garage">Producto en almacén</label>
+                                <label for="product_garage">Cantidad en almacén</label>
                                 <input type="text" class="form-control @error('product_garage') is-invalid @enderror" id="product_garage" name="product_garage" value="{{ old('product_garage') }}">
                                 @error('product_garage')
                                 <div class="invalid-feedback">
@@ -94,9 +94,18 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="product_store">Producto en venta</label>
-                                <input type="text" class="form-control @error('product_store') is-invalid @enderror" id="product_store" name="product_store" value="{{ old('product_store') }}">
-                                @error('product_store')
+                                <label for="short_description">Descripción corta</label>
+                                <input type="text" class="form-control @error('short_description') is-invalid @enderror" id="short_description" name="short_description" value="{{ old('short_description') }}">
+                                @error('short_description')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label for="long_description">Descripción larga</label>
+                                <textarea class="form-control @error('long_description') is-invalid @enderror" id="long_description" name="long_description" rows="4">{{ old('long_description') }}</textarea>
+                                @error('long_description')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
@@ -141,8 +150,8 @@
                         </div>
                         <!-- end: Input Data -->
                         <div class="mt-2">
-                            <button type="submit" class="btn btn-primary mr-2">Save</button>
-                            <a class="btn bg-danger" href="{{ route('products.index') }}">Cancel</a>
+                            <button type="submit" class="btn btn-primary mr-2">Guardar</button>
+                            <a class="btn bg-danger" href="{{ route('products.index') }}">Cancelar</a>
                         </div>
                     </form>
                 </div>
@@ -156,12 +165,10 @@
     $('#buying_date').datepicker({
         uiLibrary: 'bootstrap4',
         format: 'yyyy-mm-dd'
-        // https://gijgo.com/datetimepicker/configuration/format
     });
     $('#expire_date').datepicker({
         uiLibrary: 'bootstrap4',
         format: 'yyyy-mm-dd'
-        // https://gijgo.com/datetimepicker/configuration/format
     });
 </script>
 

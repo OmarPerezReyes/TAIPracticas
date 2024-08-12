@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
         //Customer::factory(25)->create();
         //Supplier::factory(10)->create();
 
-        for ($i=0; $i < 5; $i++) {
+        /*for ($i=0; $i < 5; $i++) {
             Product::factory()->create([
                 'product_code' => IdGenerator::generate([
                     'table' => 'products',
@@ -48,7 +48,7 @@ class DatabaseSeeder extends Seeder
                     'prefix' => 'PC'
                 ])
             ]);
-        }
+        }*/
         Category::factory(5)->create();
 
         Permission::create(['name' => 'pos.menu', 'group_name' => 'pos']);

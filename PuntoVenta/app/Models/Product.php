@@ -17,7 +17,8 @@ class Product extends Model
         'product_code',
         'product_garage',
         'product_image',
-        'product_store',
+        'short_description', // Campo agregado
+        'long_description',  // Campo agregado
         'buying_date',
         'expire_date',
         'buying_price',

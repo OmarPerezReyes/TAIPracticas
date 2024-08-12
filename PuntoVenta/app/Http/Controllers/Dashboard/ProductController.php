@@ -68,8 +68,9 @@ class ProductController extends Controller
             'product_name' => 'required|string',
             'category_id' => 'required|integer',
             'supplier_id' => 'required|integer',
+            'short_description' => 'string|nullable',
+            'long_description' => 'string|nullable',
             'product_garage' => 'string|nullable',
-            'product_store' => 'string|nullable',
             'buying_date' => 'date_format:Y-m-d|max:10|nullable',
             'expire_date' => 'date_format:Y-m-d|max:10|nullable',
             'buying_price' => 'required|integer',
@@ -78,7 +79,7 @@ class ProductController extends Controller
 
         $validatedData = $request->validate($rules);
 
-        // save product code value
+        // Save product code value
         $validatedData['product_code'] = $product_code;
 
         /**
@@ -135,8 +136,9 @@ class ProductController extends Controller
             'product_name' => 'required|string',
             'category_id' => 'required|integer',
             'supplier_id' => 'required|integer',
+            'short_description' => 'string|nullable',
+            'long_description' => 'string|nullable',
             'product_garage' => 'string|nullable',
-            'product_store' => 'string|nullable',
             'buying_date' => 'date_format:Y-m-d|max:10|nullable',
             'expire_date' => 'date_format:Y-m-d|max:10|nullable',
             'buying_price' => 'required|integer',
@@ -155,7 +157,7 @@ class ProductController extends Controller
             /**
              * Delete photo if exists.
              */
-            if($product->product_image){
+            if ($product->product_image) {
                 Storage::delete($path . $product->product_image);
             }
 
@@ -176,7 +178,7 @@ class ProductController extends Controller
         /**
          * Delete photo if exists.
          */
-        if($product->product_image){
+        if ($product->product_image) {
             Storage::delete('public/products/' . $product->product_image);
         }
 
@@ -201,28 +203,29 @@ class ProductController extends Controller
 
         $the_file = $request->file('upload_file');
 
-        try{
+        try {
             $spreadsheet = IOFactory::load($the_file->getRealPath());
-            $sheet        = $spreadsheet->getActiveSheet();
-            $row_limit    = $sheet->getHighestDataRow();
+            $sheet = $spreadsheet->getActiveSheet();
+            $row_limit = $sheet->getHighestDataRow();
             $column_limit = $sheet->getHighestDataColumn();
-            $row_range    = range( 2, $row_limit );
-            $column_range = range( 'J', $column_limit );
+            $row_range = range(2, $row_limit);
+            $column_range = range('K', $column_limit); // Adjusted for new column range
             $startcount = 2;
             $data = array();
-            foreach ( $row_range as $row ) {
+            foreach ($row_range as $row) {
                 $data[] = [
-                    'product_name' => $sheet->getCell( 'A' . $row )->getValue(),
-                    'category_id' => $sheet->getCell( 'B' . $row )->getValue(),
-                    'supplier_id' => $sheet->getCell( 'C' . $row )->getValue(),
-                    'product_code' => $sheet->getCell( 'D' . $row )->getValue(),
-                    'product_garage' => $sheet->getCell( 'E' . $row )->getValue(),
-                    'product_image' => $sheet->getCell( 'F' . $row )->getValue(),
-                    'product_store' =>$sheet->getCell( 'G' . $row )->getValue(),
-                    'buying_date' =>$sheet->getCell( 'H' . $row )->getValue(),
-                    'expire_date' =>$sheet->getCell( 'I' . $row )->getValue(),
-                    'buying_price' =>$sheet->getCell( 'J' . $row )->getValue(),
-                    'selling_price' =>$sheet->getCell( 'K' . $row )->getValue(),
+                    'product_name' => $sheet->getCell('A' . $row)->getValue(),
+                    'category_id' => $sheet->getCell('B' . $row)->getValue(),
+                    'supplier_id' => $sheet->getCell('C' . $row)->getValue(),
+                    'product_code' => $sheet->getCell('D' . $row)->getValue(),
+                    'product_garage' => $sheet->getCell('E' . $row)->getValue(),
+                    'product_image' => $sheet->getCell('F' . $row)->getValue(),
+                    'short_description' => $sheet->getCell('G' . $row)->getValue(), // New column
+                    'long_description' => $sheet->getCell('H' . $row)->getValue(),  // New column
+                    'buying_date' => $sheet->getCell('I' . $row)->getValue(),
+                    'expire_date' => $sheet->getCell('J' . $row)->getValue(),
+                    'buying_price' => $sheet->getCell('K' . $row)->getValue(),
+                    'selling_price' => $sheet->getCell('L' . $row)->getValue(),
                 ];
                 $startcount++;
             }
@@ -230,13 +233,13 @@ class ProductController extends Controller
             Product::insert($data);
 
         } catch (Exception $e) {
-            // $error_code = $e->errorInfo[1];
             return Redirect::route('products.index')->with('error', 'There was a problem uploading the data!');
         }
         return Redirect::route('products.index')->with('success', 'Data has been successfully imported!');
     }
 
-    public function exportExcel($products){
+    public function exportExcel($products)
+    {
         ini_set('max_execution_time', 0);
         ini_set('memory_limit', '4000M');
 
@@ -257,28 +260,29 @@ class ProductController extends Controller
     }
 
     /**
-     *This function loads the customer data from the database then converts it
+     * This function loads the product data from the database then converts it
      * into an Array that will be exported to Excel
      */
-    function exportData(){
-        $products = Product::all()->sortByDesc('product_id');
+    function exportData()
+    {
+        $products = Product::all()->sortByDesc('id');
 
-        $product_array [] = array(
+        $product_array[] = array(
             'Product Name',
             'Category Id',
             'Supplier Id',
             'Product Code',
             'Product Garage',
             'Product Image',
-            'Product Store',
+            'Short Description', // Updated column name
+            'Long Description',  // Updated column name
             'Buying Date',
             'Expire Date',
             'Buying Price',
             'Selling Price',
         );
 
-        foreach($products as $product)
-        {
+        foreach ($products as $product) {
             $product_array[] = array(
                 'Product Name' => $product->product_name,
                 'Category Id' => $product->category_id,
@@ -286,14 +290,15 @@ class ProductController extends Controller
                 'Product Code' => $product->product_code,
                 'Product Garage' => $product->product_garage,
                 'Product Image' => $product->product_image,
-                'Product Store' =>$product->product_store,
-                'Buying Date' =>$product->buying_date,
-                'Expire Date' =>$product->expire_date,
-                'Buying Price' =>$product->buying_price,
-                'Selling Price' =>$product->selling_price,
+                'Short Description' => $product->short_description, // Updated field
+                'Long Description' => $product->long_description,  // Updated field
+                'Buying Date' => $product->buying_date,
+                'Expire Date' => $product->expire_date,
+                'Buying Price' => $product->buying_price,
+                'Selling Price' => $product->selling_price,
             );
         }
 
-        $this->ExportExcel($product_array);
+        $this->exportExcel($product_array);
     }
 }

@@ -17,17 +17,17 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
-
         return [
-            'product_name' => fake()->word(),
-            'category_id' => fake()->randomElement([1, 2, 3, 4, 5]),
-            'supplier_id' => fake()->randomElement([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
-            'product_garage' => fake()->randomElement(['A', 'B', 'C', 'D']),
-            'product_store' => fake()->randomNumber(3),
-            'buying_price' => fake()->randomNumber(2),
-            'selling_price' => fake()->randomNumber(2),
-            'buying_date' => Carbon::now(),
-            'expire_date' => Carbon::now()->addYears(2),
+            'product_name' => $this->faker->word(),
+            'category_id' => $this->faker->randomElement([1, 2, 3, 4, 5]),
+            'supplier_id' => $this->faker->randomElement([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+            'product_garage' => $this->faker->randomElement(['A', 'B', 'C', 'D']),
+            'short_description' => $this->faker->sentence(),
+            'long_description' => $this->faker->paragraph(),
+            'buying_price' => $this->faker->numberBetween(10, 1000),
+            'selling_price' => $this->faker->numberBetween(15, 1500),
+            'buying_date' => $this->faker->date(),
+            'expire_date' => $this->faker->dateBetween('now', '+2 years'),
         ];
     }
 }
