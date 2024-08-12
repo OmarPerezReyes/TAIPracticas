@@ -7,19 +7,19 @@
             @if (session()->has('success'))
                 <div class="alert text-white bg-success" role="alert">
                     <div class="iq-alert-text">{{ session('success') }}</div>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <i class="ri-close-line"></i>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+                        <i class="ri-close-line"></i>
                     </button>
                 </div>
             @endif
             <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
                 <div>
-                    <h4 class="mb-3">Lista de clientes</h4>
+                    <h4 class="mb-3">Lista de Clientes</h4>
                 </div>
                 <div>
                     <!--<a href="{{ route('customers.exportData') }}" class="btn btn-warning add-list">Exportar</a>-->
-                    <a href="{{ route('customers.create') }}" class="btn btn-primary add-list"><i class="fa-solid fa-plus mr-3"></i>Agregar cliente</a>
-                    <a href="{{ route('customers.index') }}" class="btn btn-danger add-list"><i class="fa-solid fa-trash mr-3"></i>Reiniciar búsqueda</a>
+                    <a href="{{ route('customers.create') }}" class="btn btn-primary add-list"><i class="fa-solid fa-plus mr-3"></i>Agregar Cliente</a>
+                    <a href="{{ route('customers.index') }}" class="btn btn-danger add-list"><i class="fa-solid fa-trash mr-3"></i>Reiniciar Búsqueda</a>
                 </div>
             </div>
         </div>
@@ -28,7 +28,7 @@
             <form action="{{ route('customers.index') }}" method="get">
                 <div class="d-flex flex-wrap align-items-center justify-content-between">
                     <div class="form-group row">
-                        <label for="row" class="col-sm-3 align-self-center">Row:</label>
+                        <label for="row" class="col-sm-3 align-self-center">Filas:</label>
                         <div class="col-sm-9">
                             <select class="form-control" name="row">
                                 <option value="10" @if(request('row') == '10')selected="selected"@endif>10</option>
@@ -40,7 +40,7 @@
                     </div>
 
                     <div class="form-group row">
-                        <label class="control-label col-sm-3 align-self-center" for="search">Search:</label>
+                        <label class="control-label col-sm-3 align-self-center" for="search">Buscar:</label>
                         <div class="col-sm-8">
                             <div class="input-group">
                                 <input type="text" id="search" class="form-control" name="search" placeholder="Buscar cliente" value="{{ request('search') }}">
@@ -60,23 +60,23 @@
                     <thead class="bg-white text-uppercase">
                         <tr class="ligth ligth-data">
                             <th>No.</th>
-                            <th>Photo</th>
-                            <th>@sortablelink('name')</th>
-                            <th>@sortablelink('email')</th>
-                            <th>@sortablelink('phone')</th>
-                            <th>@sortablelink('RFC')</th>
-                            <th>@sortablelink('razon_social', 'Razon Social')</th>
-                            <th>@sortablelink('codigo_postal', 'Codigo Postal')</th>
-                            <th>@sortablelink('regimen_fiscal', 'Regimen Fiscal')</th>
-                            <th>Action</th>
+                            <th>Foto</th>
+                            <th>@sortablelink('name', 'Nombre')</th>
+                            <th>@sortablelink('email', 'Correo Electrónico')</th>
+                            <th>@sortablelink('phone', 'Teléfono')</th>
+                            <th>@sortablelink('RFC', 'RFC')</th>
+                            <th>@sortablelink('razon_social', 'Razón Social')</th>
+                            <th>@sortablelink('codigo_postal', 'Código Postal')</th>
+                            <th>@sortablelink('regimen_fiscal', 'Régimen Fiscal')</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="ligth-body">
                         @foreach ($customers as $customer)
                         <tr>
-                            <td>{{ (($customers->currentPage() * 10) - 10) + $loop->iteration  }}</td>
+                            <td>{{ (($customers->currentPage() - 1) * request('row', 10)) + $loop->iteration }}</td>
                             <td>
-                                <img class="avatar-60 rounded" src="{{ $customer->photo ? asset('storage/customers/'.$customer->photo) : asset('assets/images/user/1.png') }}">
+                                <img class="avatar-60 rounded" src="{{ $customer->photo ? asset('storage/customers/'.$customer->photo) : asset('assets/images/user/1.png') }}" alt="Foto de {{ $customer->name }}">
                             </td>
                             <td>{{ $customer->name }}</td>
                             <td>{{ $customer->email }}</td>
@@ -87,16 +87,16 @@
                             <td>{{ $customer->regimen_fiscal }}</td>
                             <td>
                                 <div class="d-flex align-items-center list-action">
-                                    <a class="badge badge-info mr-2" data-toggle="tooltip" data-placement="top" title="View"
+                                    <a class="badge badge-info mr-2" data-toggle="tooltip" data-placement="top" title="Ver"
                                         href="{{ route('customers.show', $customer->id) }}"><i class="ri-eye-line mr-0"></i>
                                     </a>
-                                    <a class="badge bg-success mr-2" data-toggle="tooltip" data-placement="top" title="Edit"
+                                    <a class="badge bg-success mr-2" data-toggle="tooltip" data-placement="top" title="Editar"
                                         href="{{ route('customers.edit', $customer->id) }}"><i class="ri-pencil-line mr-0"></i>
                                     </a>
                                     <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" style="margin-bottom: 5px">
                                         @method('delete')
                                         @csrf
-                                        <button type="submit" class="badge bg-warning mr-2 border-none" onclick="return confirm('Are you sure you want to delete this record?')" data-toggle="tooltip" data-placement="top" title="Delete"><i class="ri-delete-bin-line mr-0"></i></button>
+                                        <button type="submit" class="badge bg-warning mr-2 border-none" onclick="return confirm('¿Estás seguro de que deseas eliminar este registro?')" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="ri-delete-bin-line mr-0"></i></button>
                                     </form>
                                 </div>
                             </td>
@@ -108,7 +108,7 @@
             {{ $customers->links() }}
         </div>
     </div>
-    <!-- Page end  -->
+    <!-- Fin de la página -->
 </div>
 
 @endsection

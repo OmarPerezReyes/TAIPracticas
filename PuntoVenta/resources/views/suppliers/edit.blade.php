@@ -30,7 +30,7 @@
                             <div class="input-group mb-4 col-lg-6">
                                 <div class="custom-file">
                                     <input type="file" class="custom-file-input @error('photo') is-invalid @enderror" id="image" name="photo" accept="image/*" onchange="previewImage();">
-                                    <label class="custom-file-label" for="photo">Choose file</label>
+                                    <label class="custom-file-label" for="photo">Elegir archivo</label>
                                 </div>
                                 @error('photo')
                                 <div class="invalid-feedback">
@@ -52,7 +52,7 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="shopname">Nombre de la tienda<span class="text-danger">*</span></label>
+                                <label for="shopname">Nombre de la tienda <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('shopname') is-invalid @enderror" id="shopname" name="shopname" value="{{ old('shopname', $supplier->shopname) }}" required>
                                 @error('shopname')
                                 <div class="invalid-feedback">
@@ -62,7 +62,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="email">Correo del proveedor <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $supplier->email) }}" required>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $supplier->email) }}" required>
                                 @error('email')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -71,7 +71,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="phone">Teléfono del proveedor <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', $supplier->phone) }}" required>
+                                <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', $supplier->phone) }}" pattern="\d+" required>
                                 @error('phone')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -91,11 +91,11 @@
                                 <label for="bank_name">Nombre del banco</label>
                                 <select class="form-control @error('bank_name') is-invalid @enderror" name="bank_name">
                                     <option value="">Seleccionar</option>
-                                    <option value="BRI" @if(old('bank_name', $supplier->bank_name) == 'BBVA')selected="selected"@endif>BBVA</option>
-                                    <option value="BNI" @if(old('bank_name', $supplier->bank_name) == 'Banorte')selected="selected"@endif>Banorte</option>
-                                    <option value="BCA" @if(old('bank_name', $supplier->bank_name) == 'Banamex')selected="selected"@endif>Banamex</option>
-                                    <option value="BSI" @if(old('bank_name', $supplier->bank_name) == 'HSBC')selected="selected"@endif>HSBC</option>
-                                    <option value="Mandiri" @if(old('bank_name', $supplier->bank_name) == 'Santander')selected="selected"@endif>Santander</option>
+                                    <option value="BBVA" @if(old('bank_name', $supplier->bank_name) == 'BBVA') selected="selected" @endif>BBVA</option>
+                                    <option value="Banorte" @if(old('bank_name', $supplier->bank_name) == 'Banorte') selected="selected" @endif>Banorte</option>
+                                    <option value="Banamex" @if(old('bank_name', $supplier->bank_name) == 'Banamex') selected="selected" @endif>Banamex</option>
+                                    <option value="HSBC" @if(old('bank_name', $supplier->bank_name) == 'HSBC') selected="selected" @endif>HSBC</option>
+                                    <option value="Santander" @if(old('bank_name', $supplier->bank_name) == 'Santander') selected="selected" @endif>Santander</option>
                                 </select>
                                 @error('bank_name')
                                 <div class="invalid-feedback">
@@ -105,7 +105,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="account_number">Número de cuenta</label>
-                                <input type="text" class="form-control @error('account_number') is-invalid @enderror" id="account_number" name="account_number" value="{{ old('account_number', $supplier->account_number) }}">
+                                <input type="text" class="form-control @error('account_number') is-invalid @enderror" id="account_number" name="account_number" value="{{ old('account_number', $supplier->account_number) }}" pattern="\d{4}-\d{4}-\d{4}-\d{4}" placeholder="xxxx-xxxx-xxxx-xxxx">
                                 @error('account_number')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -114,7 +114,7 @@
                             </div>
                             
                             <div class="form-group col-md-6">
-                                <label for="city">Ciudad de origen<span class="text-danger">*</span></label>
+                                <label for="city">Ciudad de origen <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('city') is-invalid @enderror" id="city" name="city" value="{{ old('city', $supplier->city) }}" required>
                                 @error('city')
                                 <div class="invalid-feedback">
@@ -126,8 +126,8 @@
                                 <label for="type">Tipo de proveedor <span class="text-danger">*</span></label>
                                 <select class="form-control @error('type') is-invalid @enderror" name="type" required>
                                     <option value="">Seleccionar tipo</option>
-                                    <option value="Distributor" @if(old('type', $supplier->type) == 'Distribuidor')selected="selected"@endif>Distribuidor</option>
-                                    <option value="Whole Seller" @if(old('type', $supplier->type) == 'Mayorista')selected="selected"@endif>Mayorista</option>
+                                    <option value="Distribuidor" @if(old('type', $supplier->type) == 'Distribuidor') selected="selected" @endif>Distribuidor</option>
+                                    <option value="Mayorista" @if(old('type', $supplier->type) == 'Mayorista') selected="selected" @endif>Mayorista</option>
                                 </select>
                                 @error('type')
                                 <div class="invalid-feedback">
@@ -147,8 +147,8 @@
                         </div>
                         <!-- end: Input Data -->
                         <div class="mt-2">
-                            <button type="submit" class="btn btn-primary mr-2">Update</button>
-                            <a class="btn bg-danger" href="{{ route('suppliers.index') }}">Cancel</a>
+                            <button type="submit" class="btn btn-primary mr-2">Actualizar</button>
+                            <a class="btn bg-danger" href="{{ route('suppliers.index') }}">Cancelar</a>
                         </div>
                     </form>
                 </div>
@@ -159,4 +159,17 @@
 </div>
 
 @include('components.preview-img-form')
+
+<script>
+function previewImage() {
+    const file = document.getElementById('image').files[0];
+    const reader = new FileReader();
+    reader.onloadend = function () {
+        document.getElementById('image-preview').src = reader.result;
+    };
+    if (file) {
+        reader.readAsDataURL(file);
+    }
+}
+</script>
 @endsection

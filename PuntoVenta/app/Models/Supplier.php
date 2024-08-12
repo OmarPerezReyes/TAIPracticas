@@ -42,4 +42,9 @@ class Supplier extends Model
             return $query->where('name', 'like', '%' . $search . '%')->orWhere('shopname', 'like', '%' . $search . '%');
         });
     }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class); // Ajusta la relación según tu estructura de base de datos
+    }
 }

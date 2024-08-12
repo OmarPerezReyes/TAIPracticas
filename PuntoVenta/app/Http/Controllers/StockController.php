@@ -65,7 +65,7 @@ class StockController extends Controller
         }
         $product->save();
 
-        return redirect()->route('stocks.index')->with('success', 'Movimiento de stock agregado exitosamente.');
+        return redirect()->route('stocks.index')->with('success', 'Movimiento registrado exitosamente.');
     }
 
      // Método para exportar datos de stock a Excel

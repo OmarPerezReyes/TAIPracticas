@@ -10,6 +10,12 @@ class Category extends Model
 {
     use HasFactory, Sortable;
 
+     // Define la relación con el modelo Product
+     public function products()
+     {
+         return $this->hasMany(Product::class);
+     }
+     
     protected $fillable = [
         'name',
         'slug',

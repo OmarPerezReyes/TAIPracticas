@@ -10,6 +10,7 @@ class Product extends Model
 {
     use HasFactory, Sortable;
 
+
     protected $fillable = [
         'product_name',
         'category_id',

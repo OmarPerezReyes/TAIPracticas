@@ -57,22 +57,48 @@ class ProductController extends Controller
      * Update stock
      */
 
+   /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            // tus reglas de validación
+        $product_code = IdGenerator::generate([
+            'table' => 'products',
+            'field' => 'product_code',
+            'length' => 4,
+            'prefix' => 'PC'
         ]);
 
-        $product = Product::create($request->all());
+        
+        $rules = [
+            'product_image' => 'image|file|max:1024',
+            'product_name' => 'required|string',
+            'category_id' => 'required|integer',
+            'supplier_id' => 'required|integer',
+            'short_description' => 'string|nullable',
+            'long_description' => 'string|nullable',
+            'product_garage' => 'string|nullable',
+            'buying_date' => 'date_format:Y-m-d|max:10|nullable',
+            'expire_date' => 'date_format:Y-m-d|max:10|nullable',
+            'buying_price' => 'required|integer',
+            'selling_price' => 'required|integer',
+        ];
 
-        // Registrar la entrada de stock
-        Stock::create([
-            'product_id' => $product->id,
-            'date' => now(),
-            'movement' => 'Entrada',
-            'reason' => 'Nuevo producto agregado',
-            'quantity' => $product->product_garage, // O la cantidad inicial que configures
-        ]);
+        $validatedData = $request->validate($rules);
+
+        // Save product code value
+        $validatedData['product_code'] = $product_code;
+
+        if ($file = $request->file('product_image')) {
+            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
+            $path = 'public/products/';
+
+            $file->storeAs($path, $fileName);
+            $validatedData['product_image'] = $fileName;
+        }
+
+        Product::create($validatedData);
+
 
         return redirect()->route('products.index')->with('success', 'Producto agregado y stock registrado.');
     }
@@ -147,7 +173,7 @@ class ProductController extends Controller
 
         Product::where('id', $product->id)->update($validatedData);
 
-        return Redirect::route('products.index')->with('success', 'Product has been updated!');
+        return Redirect::route('products.index')->with('success', 'Producto actualizado!');
     }
 
     /**
@@ -164,58 +190,7 @@ class ProductController extends Controller
 
         Product::destroy($product->id);
 
-        return Redirect::route('products.index')->with('success', 'Product has been deleted!');
-    }
-
-    /**
-     * Show the form for importing a new resource.
-     */
-    public function importView()
-    {
-        return view('products.import');
-    }
-
-    public function importStore(Request $request)
-    {
-        $request->validate([
-            'upload_file' => 'required|file|mimes:xls,xlsx',
-        ]);
-
-        $the_file = $request->file('upload_file');
-
-        try {
-            $spreadsheet = IOFactory::load($the_file->getRealPath());
-            $sheet = $spreadsheet->getActiveSheet();
-            $row_limit = $sheet->getHighestDataRow();
-            $column_limit = $sheet->getHighestDataColumn();
-            $row_range = range(2, $row_limit);
-            $column_range = range('K', $column_limit); // Adjusted for new column range
-            $startcount = 2;
-            $data = array();
-            foreach ($row_range as $row) {
-                $data[] = [
-                    'product_name' => $sheet->getCell('A' . $row)->getValue(),
-                    'category_id' => $sheet->getCell('B' . $row)->getValue(),
-                    'supplier_id' => $sheet->getCell('C' . $row)->getValue(),
-                    'product_code' => $sheet->getCell('D' . $row)->getValue(),
-                    'product_garage' => $sheet->getCell('E' . $row)->getValue(),
-                    'product_image' => $sheet->getCell('F' . $row)->getValue(),
-                    'short_description' => $sheet->getCell('G' . $row)->getValue(), // New column
-                    'long_description' => $sheet->getCell('H' . $row)->getValue(),  // New column
-                    'buying_date' => $sheet->getCell('I' . $row)->getValue(),
-                    'expire_date' => $sheet->getCell('J' . $row)->getValue(),
-                    'buying_price' => $sheet->getCell('K' . $row)->getValue(),
-                    'selling_price' => $sheet->getCell('L' . $row)->getValue(),
-                ];
-                $startcount++;
-            }
-
-            Product::insert($data);
-
-        } catch (Exception $e) {
-            return Redirect::route('products.index')->with('error', 'There was a problem uploading the data!');
-        }
-        return Redirect::route('products.index')->with('success', 'Data has been successfully imported!');
+        return Redirect::route('products.index')->with('success', 'Producto eliminado!');
     }
 
     public function exportExcel($products)

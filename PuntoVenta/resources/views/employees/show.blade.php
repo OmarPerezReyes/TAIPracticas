@@ -2,18 +2,13 @@
 
 @section('container')
 <div class="container-fluid mb-3">
-    <div class="row">
-        <div class="col-lg-12">
+        <div class="col-lg-4">
             <div class="card car-transparent">
-                <div class="card-body p-0">
-                    <div class="profile-image position-relative">
-                        <img src="{{ asset('assets/images/page-img/profile.png') }}" class="img-fluid rounded h-30 w-100" alt="profile-image">
-                    </div>
+                <div class="card-body p-5">
                 </div>
             </div>
         </div>
-    </div>
-
+ 
     <div class="row px-3">
         <!-- begin: Left Detail Employee -->
         <div class="col-lg-4 card-profile mb-5 h-50">
@@ -46,15 +41,7 @@
                                 <p class="mb-0">{{ $employee->phone }}</p>
                             </div>
                         </li>
-                        <li class="mb-2">
-                            <div class="d-flex align-items-center">
-                                <svg class="svg-icon mr-3" height="16" width="16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                <p class="mb-0">{{ $employee->city ? $employee->city : 'Unknown' }}</p>
-                            </div>
-                        </li>
+                      
                     </ul>
                 </div>
             </div>
@@ -74,7 +61,7 @@
                         <li class="col-lg-12">
                             <div class="form-group row">
                                 <div class="col-sm-3 col-4">
-                                    <label class="col-form-label">Name</label>
+                                    <label class="col-form-label">Nombre</label>
                                 </div>
                                 <div class="col-sm-9 col-8">
                                     <input type="text" class="form-control bg-white" value="{{ $employee->name }}" readonly>
@@ -84,7 +71,7 @@
                         <li class="col-lg-12">
                             <div class="form-group row">
                                 <div class="col-sm-3 col-4">
-                                    <label class="col-form-label">Email</label>
+                                    <label class="col-form-label">Correo Electrónico</label>
                                 </div>
                                 <div class="col-sm-9 col-8">
                                     <input type="text" class="form-control bg-white" value="{{ $employee->email }}" readonly>
@@ -94,14 +81,13 @@
                         <li class="col-lg-12">
                             <div class="form-group row">
                                 <div class="col-sm-3 col-4">
-                                    <label class="col-form-label">Phone</label>
+                                    <label class="col-form-label">Teléfono</label>
                                 </div>
                                 <div class="col-sm-9 col-8">
                                     <input type="text" class="form-control bg-white" value="{{ $employee->phone }}" readonly>
                                 </div>
                             </div>
                         </li>
-                        
                     </ul>
                 </div>
             </div>

@@ -60,7 +60,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="category_id">Categoría <span class="text-danger">*</span></label>
-                                <select class="form-control @error('category_id') is-invalid @enderror" name="category_id" required>
+                                <select class="form-control @error('category_id') is-invalid @enderror" name="category_id" id="category_id" required>
                                     <option value="" disabled>-- Selecciona la categoría --</option>
                                     @foreach ($categories as $category)
                                         <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
@@ -74,7 +74,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="supplier_id">Proveedor <span class="text-danger">*</span></label>
-                                <select class="form-control @error('supplier_id') is-invalid @enderror" name="supplier_id" required>
+                                <select class="form-control @error('supplier_id') is-invalid @enderror" name="supplier_id" id="supplier_id" required>
                                     <option value="" disabled>-- Selecciona el proveedor --</option>
                                     @foreach ($suppliers as $supplier)
                                         <option value="{{ $supplier->id }}" {{ old('supplier_id', $product->supplier_id) == $supplier->id ? 'selected' : '' }}>{{ $supplier->name }}</option>
@@ -87,8 +87,8 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="product_garage">Cantidad en almacén</label>
-                                <input type="text" class="form-control @error('product_garage') is-invalid @enderror" id="product_garage" name="product_garage" value="{{ old('product_garage', $product->product_garage) }}">
+                                <label for="product_garage">Cantidad en almacén <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control @error('product_garage') is-invalid @enderror" id="product_garage" name="product_garage" value="{{ old('product_garage', $product->product_garage) }}" min="0" step="1" readonly>
                                 @error('product_garage')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -96,8 +96,26 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="buying_date">Fecha de compra</label>
-                                <input id="buying_date" class="form-control @error('buying_date') is-invalid @enderror" name="buying_date" value="{{ old('buying_date', $product->buying_date) }}" />
+                                <label for="short_description">Descripción corta <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('short_description') is-invalid @enderror" id="short_description" name="short_description" value="{{ old('short_description', $product->short_description) }}" required>
+                                @error('short_description')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label for="long_description">Descripción larga <span class="text-danger">*</span></label>
+                                <textarea class="form-control @error('long_description') is-invalid @enderror" id="long_description" name="long_description" rows="4" required>{{ old('long_description', $product->long_description) }}</textarea>
+                                @error('long_description')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="buying_date">Fecha de compra <span class="text-danger">*</span></label>
+                                <input id="buying_date" class="form-control @error('buying_date') is-invalid @enderror" name="buying_date" value="{{ old('buying_date', $product->buying_date) }}" required />
                                 @error('buying_date')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -105,8 +123,8 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="expire_date">Fecha de expiración</label>
-                                <input id="expire_date" class="form-control @error('expire_date') is-invalid @enderror" name="expire_date" value="{{ old('expire_date', $product->expire_date) }}" />
+                                <label for="expire_date">Fecha de expiración <span class="text-danger">*</span></label>
+                                <input id="expire_date" class="form-control @error('expire_date') is-invalid @enderror" name="expire_date" value="{{ old('expire_date', $product->expire_date) }}" required />
                                 @error('expire_date')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -115,7 +133,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="buying_price">Precio de compra <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('buying_price') is-invalid @enderror" id="buying_price" name="buying_price" value="{{ old('buying_price', $product->buying_price) }}" required>
+                                <input type="number" class="form-control @error('buying_price') is-invalid @enderror" id="buying_price" name="buying_price" value="{{ old('buying_price', $product->buying_price) }}" min="0" step="0.01" required>
                                 @error('buying_price')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -124,7 +142,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="selling_price">Precio de venta <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('selling_price') is-invalid @enderror" id="selling_price" name="selling_price" value="{{ old('selling_price', $product->selling_price) }}" required>
+                                <input type="number" class="form-control @error('selling_price') is-invalid @enderror" id="selling_price" name="selling_price" value="{{ old('selling_price', $product->selling_price) }}" min="0" step="0.01" required>
                                 @error('selling_price')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -146,13 +164,33 @@
 </div>
 
 <script>
-    $('#buying_date').datepicker({
-        uiLibrary: 'bootstrap4',
-        format: 'yyyy-mm-dd'
-    });
-    $('#expire_date').datepicker({
-        uiLibrary: 'bootstrap4',
-        format: 'yyyy-mm-dd'
+    $(document).ready(function() {
+        // Initialize datepickers
+        $('#buying_date').datepicker({
+            uiLibrary: 'bootstrap4',
+            format: 'yyyy-mm-dd',
+            minDate: new Date() // Set minimum date to today
+        });
+        $('#expire_date').datepicker({
+            uiLibrary: 'bootstrap4',
+            format: 'yyyy-mm-dd',
+            minDate: new Date() // Set minimum date to today
+        });
+
+        // Preview image function
+        function previewImage() {
+            const file = document.getElementById('image').files[0];
+            const reader = new FileReader();
+            reader.onloadend = function () {
+                document.getElementById('image-preview').src = reader.result;
+            };
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Add the function to the onchange event
+        document.getElementById('image').addEventListener('change', previewImage);
     });
 </script>
 

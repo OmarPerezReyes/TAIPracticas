@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between">
                     <div class="header-title">
-                        <h4 class="card-title">Agregar vendedor</h4>
+                        <h4 class="card-title">Agregar Vendedor</h4>
                     </div>
                 </div>
 
@@ -19,7 +19,7 @@
                             <div class="col-md-12">
                                 <div class="profile-img-edit">
                                     <div class="crm-profile-img-edit">
-                                        <img class="crm-profile-pic rounded-circle avatar-100" id="image-preview" src="{{ asset('assets/images/user/1.png') }}" alt="profile-pic">
+                                        <img class="crm-profile-pic rounded-circle avatar-100" id="image-preview" src="{{ asset('assets/images/user/1.png') }}" alt="imagen de perfil">
                                     </div>
                                 </div>
                             </div>
@@ -29,7 +29,7 @@
                             <div class="input-group mb-4 col-lg-6">
                                 <div class="custom-file">
                                     <input type="file" class="custom-file-input @error('photo') is-invalid @enderror" id="image" name="photo" accept="image/*" onchange="previewImage();">
-                                    <label class="custom-file-label" for="photo">Choose file</label>
+                                    <label class="custom-file-label" for="photo">Seleccionar archivo</label>
                                 </div>
                                 @error('photo')
                                 <div class="invalid-feedback">
@@ -40,9 +40,9 @@
                         </div>
                         <!-- end: Input Image -->
                         <!-- begin: Input Data -->
-                        <div class=" row align-items-center">
+                        <div class="row align-items-center">
                             <div class="form-group col-md-12">
-                                <label for="name">Name <span class="text-danger">*</span></label>
+                                <label for="name">Nombre <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" required>
                                 @error('name')
                                 <div class="invalid-feedback">
@@ -51,8 +51,8 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="email">Email <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required>
+                                <label for="email">Correo Electrónico <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required>
                                 @error('email')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -60,27 +60,31 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="phone">Phone <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone') }}" required>
+                                <label for="phone">Teléfono <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" 
+                                    value="{{ old('phone') }}" 
+                                    pattern="\d+" 
+                                    title="Ingrese solo números" 
+                                    required>
                                 @error('phone')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                                 @enderror
                             </div>
-                           
+
                         </div>
                         <!-- end: Input Data -->
                         <div class="mt-2">
-                            <button type="submit" class="btn btn-primary mr-2">Save</button>
-                            <a class="btn bg-danger" href="{{ route('employees.index') }}">Cancel</a>
+                            <button type="submit" class="btn btn-primary mr-2">Guardar</button>
+                            <a class="btn bg-danger" href="{{ route('employees.index') }}">Cancelar</a>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Page end  -->
+    <!-- Fin de la página -->
 </div>
 
 @include('components.preview-img-form')

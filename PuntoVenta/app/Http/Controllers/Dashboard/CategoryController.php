@@ -50,7 +50,7 @@ class CategoryController extends Controller
 
         Category::create($validatedData);
 
-        return Redirect::route('categories.index')->with('success', 'Category has been created!');
+        return Redirect::route('categories.index')->with('success', 'Categoria registrada!');
     }
 
     /**
@@ -85,19 +85,28 @@ class CategoryController extends Controller
 
         Category::where('slug', $category->slug)->update($validatedData);
 
-        return Redirect::route('categories.index')->with('success', 'Category has been updated!');
+        return Redirect::route('categories.index')->with('success', 'Categoria actualizada!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($slug)
-    {
-        $category = Category::where('slug', $slug)->firstOrFail();
-
-        $category->delete();
-
-        return Redirect::route('categories.index')->with('success', 'Category has been deleted!');
+{
+    // Buscar la categoría por el slug
+    $category = Category::where('slug', $slug)->firstOrFail();
+    
+    // Verificar si la categoría tiene productos asociados
+    if ($category->products()->count() > 0) {
+        // Si existen productos, redirigir con un mensaje de error
+        return Redirect::route('categories.index')
+            ->with('error', 'La categoría no puede ser eliminada porque tiene productos asociados.');
     }
 
+    // Eliminar la categoría
+    $category->delete();
+
+    // Redirigir con un mensaje de éxito
+    return Redirect::route('categories.index')
+        ->with('success', 'Categoría eliminada con éxito.');
+}
+
+    
 }

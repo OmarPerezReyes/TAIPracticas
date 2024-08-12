@@ -70,7 +70,7 @@ class SupplierController extends Controller
 
         Supplier::create($validatedData);
 
-        return Redirect::route('suppliers.index')->with('success', 'Supplier has been created!');
+        return Redirect::route('suppliers.index')->with('success', 'Datos del proveedor registrados');
     }
 
     /**
@@ -134,7 +134,7 @@ class SupplierController extends Controller
 
         Supplier::where('id', $supplier->id)->update($validatedData);
 
-        return Redirect::route('suppliers.index')->with('success', 'Supplier has been updated!');
+        return Redirect::route('suppliers.index')->with('success', 'Datos del proveedor actualizados!');
     }
 
     /**
@@ -142,15 +142,21 @@ class SupplierController extends Controller
      */
     public function destroy(Supplier $supplier)
     {
+        // Verificar si el proveedor tiene productos asociados
+        if ($supplier->products()->count() > 0) {
+            return Redirect::route('suppliers.index')->with('error', 'No se puede eliminar el proveedor porque tiene productos asociados.');
+        }
+    
         /**
          * Delete photo if exists.
          */
-        if($supplier->photo){
+        if ($supplier->photo) {
             Storage::delete('public/suppliers/' . $supplier->photo);
         }
-
-        Supplier::destroy($supplier->id);
-
-        return Redirect::route('suppliers.index')->with('success', 'Supplier has been deleted!');
+    
+        // Eliminar el proveedor
+        $supplier->delete();
+    
+        return Redirect::route('suppliers.index')->with('success', 'Datos del proveedor eliminados correctamente!');
     }
 }

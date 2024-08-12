@@ -53,8 +53,8 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="correo">Correo Electrónico <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('correo') is-invalid @enderror" id="correo" name="email" value="{{ old('email', $customer->email) }}" required>
-                                @error('correo')
+                                <input type="email" class="form-control @error('email') is-invalid @enderror" id="correo" name="email" value="{{ old('email', $customer->email) }}" required>
+                                @error('email')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
@@ -62,8 +62,8 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="telefono">Teléfono <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('telefono') is-invalid @enderror" id="telefono" name="phone" value="{{ old('phone', $customer->phone) }}" required>
-                                @error('telefono')
+                                <input type="number" class="form-control @error('phone') is-invalid @enderror" id="telefono" name="phone" value="{{ old('phone', $customer->phone) }}" required min="0" step="1">
+                                @error('phone')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
@@ -125,7 +125,7 @@
             </div>
         </div>
     </div>
-    <!-- Page end  -->
+    <!-- Fin de la Página -->
 </div>
 
 @include('components.preview-img-form')
