@@ -16,6 +16,7 @@ use App\Http\Controllers\Dashboard\OrderController;
 use App\Http\Controllers\Dashboard\PosController;
 use App\Http\Controllers\Dashboard\RoleController;
 use App\Http\Controllers\Dashboard\UserController;
+use App\Http\Controllers\StockController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,7 +87,28 @@ Route::middleware(['permission:product.menu'])->group(function () {
     Route::post('/products/import', [ProductController::class, 'importStore'])->name('products.importStore');
     Route::get('/products/export', [ProductController::class, 'exportData'])->name('products.exportData');
     Route::resource('/products', ProductController::class);
+
 });
+
+
+Route::get('/products/manage-stock', [ProductController::class, 'manageStock'])->name('products.manageStock');
+
+Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+Route::get('/stock/manage', [StockController::class, 'manage'])->name('stock.manage');
+Route::post('/stock', [StockController::class, 'store'])->name('stock.store');
+// Ruta para el índice de stock
+Route::resource('stocks', StockController::class);
+
+Route::resource('stocks', StockController::class)->middleware('can:pos.menu');
+
+
+// Ruta para el índice de stock
+Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
+
+// Ruta para el formulario de crear movimiento de stock
+Route::post('/stock', [StockController::class, 'store'])->name('stock.store');
+
+
 
 // ====== CATEGORY PRODUCTS ======
 Route::middleware(['permission:category.menu'])->group(function () {

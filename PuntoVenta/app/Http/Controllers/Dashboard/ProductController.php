@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Supplier;
+use App\Models\Stock;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Intervention\Image\Facades\Image;
@@ -53,50 +54,29 @@ class ProductController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * Update stock
      */
+
     public function store(Request $request)
     {
-        $product_code = IdGenerator::generate([
-            'table' => 'products',
-            'field' => 'product_code',
-            'length' => 4,
-            'prefix' => 'PC'
+        $request->validate([
+            // tus reglas de validación
         ]);
 
-        $rules = [
-            'product_image' => 'image|file|max:1024',
-            'product_name' => 'required|string',
-            'category_id' => 'required|integer',
-            'supplier_id' => 'required|integer',
-            'short_description' => 'string|nullable',
-            'long_description' => 'string|nullable',
-            'product_garage' => 'string|nullable',
-            'buying_date' => 'date_format:Y-m-d|max:10|nullable',
-            'expire_date' => 'date_format:Y-m-d|max:10|nullable',
-            'buying_price' => 'required|integer',
-            'selling_price' => 'required|integer',
-        ];
+        $product = Product::create($request->all());
 
-        $validatedData = $request->validate($rules);
+        // Registrar la entrada de stock
+        Stock::create([
+            'product_id' => $product->id,
+            'date' => now(),
+            'movement' => 'Entrada',
+            'reason' => 'Nuevo producto agregado',
+            'quantity' => $product->product_garage, // O la cantidad inicial que configures
+        ]);
 
-        // Save product code value
-        $validatedData['product_code'] = $product_code;
-
-        /**
-         * Handle upload image with Storage.
-         */
-        if ($file = $request->file('product_image')) {
-            $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
-            $path = 'public/products/';
-
-            $file->storeAs($path, $fileName);
-            $validatedData['product_image'] = $fileName;
-        }
-
-        Product::create($validatedData);
-
-        return Redirect::route('products.index')->with('success', 'Product has been created!');
+        return redirect()->route('products.index')->with('success', 'Producto agregado y stock registrado.');
     }
+
 
     /**
      * Display the specified resource.
@@ -301,4 +281,38 @@ class ProductController extends Controller
 
         $this->exportExcel($product_array);
     }
+
+    public function updateStock(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|numeric',
+            'type' => 'required|in:entry,exit',
+            'reason' => 'nullable|string',
+        ]);
+
+        $product = Product::find($request->input('product_id'));
+        $quantity = $request->input('quantity');
+        $type = $request->input('type');
+
+        if ($type === 'entry') {
+            $product->product_garage += $quantity;
+        } else {
+            $product->product_garage -= $quantity;
+        }
+
+        $product->save();
+
+        // Registrar el movimiento en la tabla stock
+        Stock::create([
+            'product_id' => $product->id,
+            'date' => now(),
+            'movement' => $type,
+            'reason' => $request->input('reason'),
+            'quantity' => $quantity,
+        ]);
+
+        return redirect()->route('products.manageStock')->with('success', 'Stock actualizado exitosamente.');
+    }
+
 }

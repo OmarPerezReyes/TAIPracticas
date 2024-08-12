@@ -28,49 +28,44 @@
                     </a>
                 </li>
                 @endif
+                            
+                @if (auth()->user()->can('stock.manage'))
+                    <li class="{{ Request::is('stocks*') ? 'active' : '' }}">
+                        <a href="{{ route('stocks.index') }}" class="svg-icon">
+                            <i class="fa-solid fa-box"></i>
+                            <span class="ml-3">Stock</span>
+                        </a>
+                    </li>
+                @endif
                 <hr>
 
-               
+                @if (auth()->user()->can('employee.menu'))
+                    <li class="{{ Request::is(['products']) ? 'active' : '' }}">
+                        <a href="{{ route('products.index') }}" class="svg-icon">
+                            <i class="fa-solid fa-box"></i><span>Productos</span>
+                        </a>
+                    </li>
+                @endif
 
-                @if (auth()->user()->can('product.menu'))
-                <li>
-                    <a href="#products" class="collapsed" data-toggle="collapse" aria-expanded="false">
-                        <i class="fa-solid fa-boxes-stacked"></i>
-                        <span class="ml-3">Productos</span>
-                        <svg class="svg-icon iq-arrow-right arrow-active" width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="10 15 15 20 20 15"></polyline><path d="M4 4h7a4 4 0 0 1 4 4v12"></path>
-                        </svg>
-                    </a>
-                    <ul id="products" class="iq-submenu collapse" data-parent="#iq-sidebar-toggle" style="">
-                        <li class="{{ Request::is(['products']) ? 'active' : '' }}">
-                            <a href="{{ route('products.index') }}">
-                                <i class="fa-solid fa-arrow-right"></i><span>Inventario</span>
-                            </a>
-                        </li>
-                        <li class="{{ Request::is(['products/create']) ? 'active' : '' }}">
-                            <a href="{{ route('products.create') }}">
-                                <i class="fa-solid fa-arrow-right"></i><span>Agregar producto</span>
-                            </a>
-                        </li>
-                        <li class="{{ Request::is(['categories*']) ? 'active' : '' }}">
-                            <a href="{{ route('categories.index') }}">
-                                <i class="fa-solid fa-arrow-right"></i><span>Categorias</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                @if (auth()->user()->can('employee.menu'))
+                    <li class="{{ Request::is(['categories*']) ? 'active' : '' }}">
+                        <a href="{{ route('categories.index') }}" class="svg-icon">
+                            <i class="fa-solid fa-tags"></i><span>Categorias</span>
+                        </a>
+                    </li>
                 @endif
 
                 <hr>
 
                 @if (auth()->user()->can('employee.menu'))
-                <li class="{{ Request::is('employees*') ? 'active' : '' }}">
-                    <a href="{{ route('employees.index') }}" class="svg-icon">
-                        <i class="fa-solid fa-users"></i>
-                        <span class="ml-3">Vendedores</span>
-                    </a>
-                </li>
+                    <li class="{{ Request::is('employees*') ? 'active' : '' }}">
+                        <a href="{{ route('employees.index') }}" class="svg-icon">
+                            <i class="fa-solid fa-users"></i>
+                            <span class="ml-3">Vendedores</span>
+                        </a>
+                    </li>
                 @endif
+
 
                 @if (auth()->user()->can('customer.menu'))
                 <li class="{{ Request::is('customers*') ? 'active' : '' }}">
