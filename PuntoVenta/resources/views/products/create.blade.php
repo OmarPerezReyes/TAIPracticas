@@ -71,7 +71,7 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="supplier_id">Vendedor <span class="text-danger">*</span></label>
+                                <label for="supplier_id">Proveedor <span class="text-danger">*</span></label>
                                 <select class="form-control" name="supplier_id" required>
                                     <option selected="" disabled>-- Selecciona al proveedor --</option>
                                     @foreach ($suppliers as $supplier)

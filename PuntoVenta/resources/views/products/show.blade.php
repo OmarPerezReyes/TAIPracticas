@@ -18,17 +18,16 @@
                 </div>
 
                 <div class="card-body">
-                    <div class=" row align-items-center">
+                    <div class="row align-items-center">
                         <div class="form-group col-md-6">
                             <label>Código del producto</label>
-                            <input type="text" class="form-control bg-white" value="{{  $product->product_code }}" readonly>
+                            <input type="text" class="form-control bg-white" value="{{ $product->product_code }}" readonly>
                         </div>
                         <div class="form-group col-md-6">
                             <label>Código de barra</label>
                             {!! $barcode !!}
                         </div>
                     </div>
-                    <!-- end: Show Data -->
                 </div>
             </div>
         </div>
@@ -42,8 +41,7 @@
                 </div>
 
                 <div class="card-body">
-                    <!-- begin: Show Data -->
-                    <div class="form-group row align-items-center">
+                    <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="profile-img-edit">
                                 <div class="crm-profile-img-edit">
@@ -53,27 +51,24 @@
                         </div>
                     </div>
 
-                    <div class=" row align-items-center">
+                    <div class="row align-items-center">
                         <div class="form-group col-md-12">
                             <label>Nombre del producto</label>
-                            <input type="text" class="form-control bg-white" value="{{  $product->product_name }}" readonly>
+                            <input type="text" class="form-control bg-white" value="{{ $product->product_name }}" readonly>
                         </div>
                         <div class="form-group col-md-6">
-                            <label>Categoria</label>
-                            <input type="text" class="form-control bg-white" value="{{  $product->category->name }}" readonly>
+                            <label>Categoría</label>
+                            <input type="text" class="form-control bg-white" value="{{ $product->category->name }}" readonly>
                         </div>
                         <div class="form-group col-md-6">
-                            <label>Vendedor</label>
-                            <input type="text" class="form-control bg-white" value="{{  $product->supplier->name }}" readonly>
+                            <label>Proveedor</label>
+                            <input type="text" class="form-control bg-white" value="{{ $product->supplier->name }}" readonly>
                         </div>
                         <div class="form-group col-md-6">
-                            <label>Producto en almacén</label>
-                            <input type="text" class="form-control bg-white" value="{{  $product->product_garage }}" readonly>
+                            <label>Cantidad en almacén</label>
+                            <input type="text" class="form-control bg-white" value="{{ $product->product_garage }}" readonly>
                         </div>
-                        <div class="form-group col-md-6">
-                            <label>Producto en venta</label>
-                            <input type="text" class="form-control bg-white" value="{{  $product->product_store }}" readonly>
-                        </div>
+                        <!-- Eliminado el campo Producto en venta -->
                         <div class="form-group col-md-6">
                             <label>Fecha de compra</label>
                             <input class="form-control bg-white" id="buying_date" value="{{ $product->buying_date }}" readonly/>
@@ -84,14 +79,21 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label>Precio de compra</label>
-                            <input type="text" class="form-control bg-white" value="{{  $product->buying_price }}" readonly>
+                            <input type="text" class="form-control bg-white" value="{{ $product->buying_price }}" readonly>
                         </div>
                         <div class="form-group col-md-6">
                             <label>Precio de venta</label>
-                            <input type="text" class="form-control bg-white" value="{{  $product->selling_price }}" readonly>
+                            <input type="text" class="form-control bg-white" value="{{ $product->selling_price }}" readonly>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label>Descripción corta</label>
+                            <input type="text" class="form-control bg-white" value="{{ $product->short_description }}" readonly>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label>Descripción larga</label>
+                            <textarea class="form-control bg-white" rows="4" readonly>{{ $product->long_description }}</textarea>
                         </div>
                     </div>
-                    <!-- end: Show Data -->
                 </div>
             </div>
         </div>
@@ -103,12 +105,10 @@
     $('#buying_date').datepicker({
         uiLibrary: 'bootstrap4',
         format: 'yyyy-mm-dd'
-        // https://gijgo.com/datetimepicker/configuration/format
     });
     $('#expire_date').datepicker({
         uiLibrary: 'bootstrap4',
         format: 'yyyy-mm-dd'
-        // https://gijgo.com/datetimepicker/configuration/format
     });
 </script>
 

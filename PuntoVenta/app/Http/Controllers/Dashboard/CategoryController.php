@@ -91,10 +91,13 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
+    public function destroy($slug)
     {
-        Category::destroy($category->slug);
+        $category = Category::where('slug', $slug)->firstOrFail();
+
+        $category->delete();
 
         return Redirect::route('categories.index')->with('success', 'Category has been deleted!');
     }
+
 }
