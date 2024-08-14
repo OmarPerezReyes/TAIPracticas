@@ -114,13 +114,14 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="buying_date">Fecha de compra<span class="text-danger">*</span></label>
-                                <input id="buying_date" type="text" class="form-control @error('buying_date') is-invalid @enderror" name="buying_date" value="{{ old('buying_date') }}" min="{{ date('Y-m-d') }}" required />
+                                <input id="buying_date" type="text" class="form-control @error('buying_date') is-invalid @enderror" name="buying_date" value="{{ old('buying_date', date('Y-m-d')) }}" min="{{ date('Y-m-d') }}" required />
                                 @error('buying_date')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                                 @enderror
                             </div>
+
                             <div class="form-group col-md-6">
                                 <label for="expire_date">Fecha de expiración<span class="text-danger">*</span></label>
                                 <input id="expire_date" type="text" class="form-control @error('expire_date') is-invalid @enderror" name="expire_date" value="{{ old('expire_date') }}" min="{{ date('Y-m-d') }}" required />
@@ -132,22 +133,24 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="buying_price">Precio de compra <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control @error('buying_price') is-invalid @enderror" id="buying_price" name="buying_price" value="{{ old('buying_price') }}" min="0" step="0.01" required>
+                                <input type="number" class="form-control @error('buying_price') is-invalid @enderror" id="buying_price" name="buying_price" value="{{ old('buying_price') }}" min="0" step="0.001" required>
                                 @error('buying_price')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                                 @enderror
                             </div>
+
                             <div class="form-group col-md-6">
                                 <label for="selling_price">Precio de venta <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control @error('selling_price') is-invalid @enderror" id="selling_price" name="selling_price" value="{{ old('selling_price') }}" min="0" step="0.01" required>
+                                <input type="number" class="form-control @error('selling_price') is-invalid @enderror" id="selling_price" name="selling_price" value="{{ old('selling_price') }}" min="0" step="0.001" required>
                                 @error('selling_price')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                                 @enderror
                             </div>
+
                         </div>
                         <!-- end: Input Data -->
                         <div class="mt-2">
@@ -161,18 +164,19 @@
     </div>
     <!-- Page end  -->
 </div>
-
 <script>
+    // Inicializar el datepicker para buying_date
     $('#buying_date').datepicker({
-        uiLibrary: 'bootstrap4',
-        format: 'yyyy-mm-dd',
-        minDate: new Date()
-    });
-    $('#expire_date').datepicker({
-        uiLibrary: 'bootstrap4',
-        format: 'yyyy-mm-dd',
-        minDate: new Date()
-    });
+            uiLibrary: 'bootstrap4',
+            format: 'yyyy-mm-dd',
+            minDate: new Date()  // Permite seleccionar desde la fecha actual
+        }).val('{{ old('buying_date', date('Y-m-d')) }}'); // Establecer el valor predeterminado en el script
+
+        $('#expire_date').datepicker({
+            uiLibrary: 'bootstrap4',
+            format: 'yyyy-mm-dd',
+            minDate: new Date()  // Permite seleccionar desde la fecha actual
+        });
 
     function previewImage() {
         const file = document.getElementById('image').files[0];
@@ -188,5 +192,7 @@
             document.getElementById('image-preview').src = "{{ asset('assets/images/product/default.webp') }}";
         }
     }
+
 </script>
+
 @endsection

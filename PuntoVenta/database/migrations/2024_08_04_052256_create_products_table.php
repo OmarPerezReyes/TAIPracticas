@@ -17,16 +17,17 @@ return new class extends Migration
             $table->integer('category_id');
             $table->integer('supplier_id');
             $table->string('product_code')->nullable();
-            $table->string('product_garage')->nullable();
+            $table->integer('product_garage'); // Cambiado a integer para cantidad
             $table->string('product_image')->nullable();
-            $table->text('short_description')->nullable(); // Nueva columna para descripción corta
-            $table->text('long_description')->nullable();  // Nueva columna para descripción larga
+            $table->text('short_description')->nullable(); // Descripción corta
+            $table->text('long_description')->nullable();  // Descripción larga
             $table->date('buying_date')->nullable();
-            $table->string('expire_date')->nullable();
-            $table->integer('buying_price')->nullable();
-            $table->integer('selling_price')->nullable();
+            $table->date('expire_date')->nullable(); // Cambiado a date para fecha
+            $table->decimal('buying_price', 10, 2)->nullable(); // Cambiado a decimal
+            $table->decimal('selling_price', 10, 2)->nullable(); // Cambiado a decimal
             $table->timestamps();
         });
+        
     }
 
     /**

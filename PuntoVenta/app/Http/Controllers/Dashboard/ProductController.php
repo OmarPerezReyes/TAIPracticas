@@ -62,6 +62,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        // Generar un código de producto
         $product_code = IdGenerator::generate([
             'table' => 'products',
             'field' => 'product_code',
@@ -69,7 +70,7 @@ class ProductController extends Controller
             'prefix' => 'PC'
         ]);
 
-        
+        // Reglas de validación
         $rules = [
             'product_image' => 'image|file|max:1024',
             'product_name' => 'required|string',
@@ -77,18 +78,33 @@ class ProductController extends Controller
             'supplier_id' => 'required|integer',
             'short_description' => 'string|nullable',
             'long_description' => 'string|nullable',
-            'product_garage' => 'string|nullable',
-            'buying_date' => 'date_format:Y-m-d|max:10|nullable',
-            'expire_date' => 'date_format:Y-m-d|max:10|nullable',
-            'buying_price' => 'required|integer',
-            'selling_price' => 'required|integer',
+            'product_garage' => 'required|integer|min:1',
+            'buying_date' => 'required|date_format:Y-m-d',
+            'expire_date' => [
+                'required',
+                'date_format:Y-m-d',
+                function ($attribute, $value, $fail) use ($request) {
+                    $buyingDate = $request->input('buying_date');
+                    if ($value < $buyingDate) {
+                        $fail('La fecha de expiración debe ser mayor o igual a la fecha de compra.');
+                    }
+                },
+            ],
+            'buying_price' => 'required|numeric|min:0|regex:/^\d+(\.\d{1,3})?$/',
+            'selling_price' => 'required|numeric|min:0|regex:/^\d+(\.\d{1,3})?$/',
         ];
-
+        
+        // Validar los datos del request
         $validatedData = $request->validate($rules);
+        
+        $validatedData['buying_price'] = number_format($request->input('buying_price'), 3, '.', '');
+        $validatedData['selling_price'] = number_format($request->input('selling_price'), 3, '.', '');
 
-        // Save product code value
+
+        // Guardar el código de producto en los datos validados
         $validatedData['product_code'] = $product_code;
 
+        // Manejar la carga de la imagen del producto
         if ($file = $request->file('product_image')) {
             $fileName = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
             $path = 'public/products/';
@@ -97,11 +113,23 @@ class ProductController extends Controller
             $validatedData['product_image'] = $fileName;
         }
 
-        Product::create($validatedData);
+        // Crear el producto con los datos validados
+        $product = Product::create($validatedData);
+
+        // Registrar la entrada de stock
+        Stock::create([
+            'product_id' => $product->id,
+            'date' => now(),
+            'movement' => 'Entrada',
+            'reason' => 'Nuevo producto agregado',
+            'quantity' => $product->product_garage, // O la cantidad inicial que configures
+        ]);
 
 
+        // Redirigir con mensaje de éxito
         return redirect()->route('products.index')->with('success', 'Producto agregado y stock registrado.');
     }
+
 
 
     /**
