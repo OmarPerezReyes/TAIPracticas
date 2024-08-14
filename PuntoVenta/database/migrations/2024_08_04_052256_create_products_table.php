@@ -23,8 +23,8 @@ return new class extends Migration
             $table->text('long_description')->nullable();  // Descripción larga
             $table->date('buying_date')->nullable();
             $table->date('expire_date')->nullable(); // Cambiado a date para fecha
-            $table->decimal('buying_price', 10, 2)->nullable(); // Cambiado a decimal
-            $table->decimal('selling_price', 10, 2)->nullable(); // Cambiado a decimal
+            $table->decimal('buying_price', 15, 3)->nullable(); // Cambiado a decimal
+            $table->decimal('selling_price', 15, 3)->nullable(); // Cambiado a decimal
             $table->timestamps();
         });
         

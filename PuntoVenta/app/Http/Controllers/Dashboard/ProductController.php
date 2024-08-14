@@ -32,13 +32,18 @@ class ProductController extends Controller
             abort(400, 'The per-page parameter must be an integer between 1 and 100.');
         }
 
-        return view('products.index', [
-            'products' => Product::with(['category', 'supplier'])
-                ->filter(request(['search']))
-                ->sortable()
-                ->paginate($row)
-                ->appends(request()->query()),
-        ]);
+        // Recuperar los productos con los filtros aplicados
+        $products = Product::with(['category', 'supplier'])
+            ->filter(request(['search']))
+            ->sortable()
+            ->paginate($row)
+            ->appends(request()->query());
+
+        // Mostrar los datos para depuración
+        //dd($products);
+
+        // Descomentar la siguiente línea cuando termines la depuración
+        return view('products.index', compact('products'));
     }
 
     /**
@@ -165,6 +170,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+        // Reglas de validación
         $rules = [
             'product_image' => 'image|file|max:1024',
             'product_name' => 'required|string',
@@ -172,11 +178,20 @@ class ProductController extends Controller
             'supplier_id' => 'required|integer',
             'short_description' => 'string|nullable',
             'long_description' => 'string|nullable',
-            'product_garage' => 'string|nullable',
-            'buying_date' => 'date_format:Y-m-d|max:10|nullable',
-            'expire_date' => 'date_format:Y-m-d|max:10|nullable',
-            'buying_price' => 'required|integer',
-            'selling_price' => 'required|integer',
+            'product_garage' => 'required|integer|min:1',
+            'buying_date' => 'required|date_format:Y-m-d',
+            'expire_date' => [
+                'required',
+                'date_format:Y-m-d',
+                function ($attribute, $value, $fail) use ($request) {
+                    $buyingDate = $request->input('buying_date');
+                    if ($value < $buyingDate) {
+                        $fail('La fecha de expiración debe ser mayor o igual a la fecha de compra.');
+                    }
+                },
+            ],
+            'buying_price' => 'required|numeric|min:0|regex:/^\d+(\.\d{1,3})?$/',
+            'selling_price' => 'required|numeric|min:0|regex:/^\d+(\.\d{1,3})?$/',
         ];
 
         $validatedData = $request->validate($rules);

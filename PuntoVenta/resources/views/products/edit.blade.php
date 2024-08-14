@@ -20,7 +20,8 @@
                 <div class="card-body">
                     <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        @method('put')
+                        @method('PUT')
+                        
                         <!-- begin: Input Image -->
                         <div class="form-group row align-items-center">
                             <div class="col-md-12">
@@ -88,7 +89,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="product_garage">Cantidad en almacén <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control @error('product_garage') is-invalid @enderror" id="product_garage" name="product_garage" value="{{ old('product_garage', $product->product_garage) }}" min="0" step="1" readonly>
+                                <input type="number" class="form-control @error('product_garage') is-invalid @enderror" id="product_garage" name="product_garage" value="{{ old('product_garage', $product->product_garage) }}" min="0" step="1" required>
                                 @error('product_garage')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -115,7 +116,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="buying_date">Fecha de compra <span class="text-danger">*</span></label>
-                                <input id="buying_date" class="form-control @error('buying_date') is-invalid @enderror" name="buying_date" value="{{ old('buying_date', $product->buying_date) }}" required />
+                                <input id="buying_date" type="text" class="form-control @error('buying_date') is-invalid @enderror" name="buying_date" value="{{ old('buying_date', $product->buying_date) }}" required />
                                 @error('buying_date')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -124,7 +125,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="expire_date">Fecha de expiración <span class="text-danger">*</span></label>
-                                <input id="expire_date" class="form-control @error('expire_date') is-invalid @enderror" name="expire_date" value="{{ old('expire_date', $product->expire_date) }}" required />
+                                <input id="expire_date" type="text" class="form-control @error('expire_date') is-invalid @enderror" name="expire_date" value="{{ old('expire_date', $product->expire_date) }}" required />
                                 @error('expire_date')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -133,7 +134,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="buying_price">Precio de compra <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control @error('buying_price') is-invalid @enderror" id="buying_price" name="buying_price" value="{{ old('buying_price', $product->buying_price) }}" min="0" step="0.01" required>
+                                <input type="number" class="form-control @error('buying_price') is-invalid @enderror" id="buying_price" name="buying_price" value="{{ old('buying_price', $product->buying_price) }}" min="0" step="0.001" required>
                                 @error('buying_price')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -142,7 +143,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="selling_price">Precio de venta <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control @error('selling_price') is-invalid @enderror" id="selling_price" name="selling_price" value="{{ old('selling_price', $product->selling_price) }}" min="0" step="0.01" required>
+                                <input type="number" class="form-control @error('selling_price') is-invalid @enderror" id="selling_price" name="selling_price" value="{{ old('selling_price', $product->selling_price) }}" min="0" step="0.001" required>
                                 @error('selling_price')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -171,28 +172,23 @@
             format: 'yyyy-mm-dd',
             minDate: new Date() // Set minimum date to today
         });
+
         $('#expire_date').datepicker({
             uiLibrary: 'bootstrap4',
             format: 'yyyy-mm-dd',
             minDate: new Date() // Set minimum date to today
         });
-
-        // Preview image function
-        function previewImage() {
-            const file = document.getElementById('image').files[0];
-            const reader = new FileReader();
-            reader.onloadend = function () {
-                document.getElementById('image-preview').src = reader.result;
-            };
-            if (file) {
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // Add the function to the onchange event
-        document.getElementById('image').addEventListener('change', previewImage);
     });
-</script>
 
-@include('components.preview-img-form')
+    function previewImage() {
+        var file = document.getElementById('image').files[0];
+        var reader = new FileReader();
+        reader.onloadend = function () {
+            document.getElementById('image-preview').src = reader.result;
+        }
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
 @endsection

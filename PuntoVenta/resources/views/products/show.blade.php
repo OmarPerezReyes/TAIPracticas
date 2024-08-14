@@ -101,16 +101,6 @@
     <!-- Page end  -->
 </div>
 
-<script>
-    $('#buying_date').datepicker({
-        uiLibrary: 'bootstrap4',
-        format: 'yyyy-mm-dd'
-    });
-    $('#expire_date').datepicker({
-        uiLibrary: 'bootstrap4',
-        format: 'yyyy-mm-dd'
-    });
-</script>
 
 @include('components.preview-img-form')
 @endsection

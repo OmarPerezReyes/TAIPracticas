@@ -1,6 +1,7 @@
 @extends('dashboard.body.main')
 
 @section('container')
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
@@ -71,7 +72,6 @@
                             <th>@sortablelink('category.name', 'Categoría')</th>
                             <th>@sortablelink('supplier.name', 'Proveedor')</th>
                             <th>@sortablelink('selling_price', 'Precio')</th>
-                            <!--<th>Estado</th>-->
                             <th>Stock</th>
                             <th>Acción</th>
                         </tr>
@@ -86,14 +86,8 @@
                             <td>{{ $product->product_name }}</td>
                             <td>{{ $product->category->name }}</td>
                             <td>{{ $product->supplier->name }}</td>
-                            <td>{{ $product->selling_price }}</td>
-                           <!-- <td>
-                                @if ($product->expire_date > Carbon\Carbon::now()->format('Y-m-d'))
-                                    <span class="badge rounded-pill bg-success">Válido</span>
-                                @else
-                                    <span class="badge rounded-pill bg-danger">Inválido</span>
-                                @endif
-                            </td>-->
+                            <td>{{ number_format($product->selling_price, 3, '.', ',') }}</td>
+                
                             <td>
                                 <span class="btn btn-warning text-white mr-2">{{ $product->product_garage }}</span>
                             </td>
