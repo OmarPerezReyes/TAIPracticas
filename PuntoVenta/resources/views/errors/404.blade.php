@@ -3,9 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>POS Dash | ERROR 404</title>
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}" />
+    <title> ERROR 404</title>
     <link rel="stylesheet" href="{{ asset('assets/css/backend-plugin.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendor/remixicon/fonts/remixicon.css') }}">
 </head>
@@ -16,7 +14,7 @@
                 <div class="col-sm-12 text-center align-self-center">
                     <div class="iq-error position-relative">
                         <h2 class="mb-0 mt-4">404</h2>
-                        <p>Oops! This Page is Not Found.</p>
+                        <p>Página no encontrada.</p>
                         <a class="btn btn-primary d-inline-flex align-items-center mt-3" href="{{ route('dashboard') }}"><i class="ri-home-4-line"></i>Back to Home</a>
                     </div>
                 </div>

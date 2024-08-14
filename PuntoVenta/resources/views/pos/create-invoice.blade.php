@@ -1,175 +1,84 @@
+<?php
+use Carbon\Carbon;
+
+// Configurar el idioma en la vista
+Carbon::setLocale('es');
+?>
 @extends('dashboard.body.main')
 
 @section('container')
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card card-block">
-                <div class="card-header d-flex justify-content-between bg-primary">
-                    <div class="iq-header-title">
-                        <h4 class="card-title mb-0">Invoice</h4>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white text-center">
+                    <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" class="img-fluid my-3" style="width: 150px;">
+                    <h5 class="font-weight-bold">Resumen de Pedido</h5>
+                </div>
+
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-4">
+                        <div>
+                            <h6 class="text-muted">Fecha de la Orden:</h6>
+                            <p class="mb-0">{{ Carbon::now()->translatedFormat('d \d\e F \d\e Y') }}</p>
+                            </div>
+                        <div>
+                            <h6 class="text-muted">Estado de la Orden:</h6>
+                            <span class="badge badge-danger">No Pagado</span>
+                        </div>
                     </div>
 
-                    <div class="invoice-btn d-flex">
-                        <form action="{{ route('pos.printInvoice') }}" method="post">
-                            @csrf
-                            <input type="hidden" name="customer_id" value="{{ $customer->id }}">
-                            <button type="submit" class="btn btn-primary-dark mr-2"><i class="las la-print"></i> Print</button>
-                        </form>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th class="text-left">Artículo</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-center">Precio</th>
+                                    <th class="text-right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($content as $item)
+                                <tr>
+                                    <td class="text-left">{{ $item->name }}</td>
+                                    <td class="text-center">{{ $item->qty }}</td>
+                                    <td class="text-center">${{ $item->price }}</td>
+                                    <td class="text-right">${{ $item->subtotal }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
 
-                        <button type="button" class="btn btn-primary-dark mr-2" data-toggle="modal" data-target=".bd-example-modal-lg">Create</button>
-
-                        <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-white">
-                                        <h3 class="modal-title text-center mx-auto">Invoice of {{ $customer->name }}<br/>Total Amount ${{ Cart::total() }}</h3>
-                                    </div>
-                                    <form action="{{ route('pos.storeOrder') }}" method="post">
-                                        @csrf
-                                        <div class="modal-body">
-                                            <input type="hidden" name="customer_id" value="{{ $customer->id }}">
-
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label for="payment_status">Payment</label>
-                                                    <select class="form-control @error('payment_status') is-invalid @enderror" name="payment_status">
-                                                        <option selected="" disabled="">-- Select Payment --</option>
-                                                        <option value="HandCash">HandCash</option>
-                                                        <option value="Cheque">Cheque</option>
-                                                        <option value="Due">Due</option>
-                                                    </select>
-                                                    @error('payment_status')
-                                                    <div class="invalid-feedback">
-                                                        {{ $message }}
-                                                    </div>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <label for="pay">Pay Now</label>
-                                                    <input type="text" class="form-control @error('pay') is-invalid @enderror" id="pay" name="pay" value="{{ old('pay') }}">
-                                                    @error('pay')
-                                                    <div class="invalid-feedback">
-                                                        {{ $message }}
-                                                    </div>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-primary">Save</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
+                    <div class="border-top mt-4 pt-4">
+                        <div class="d-flex justify-content-between">
+                            <p class="text-muted">Subtotal:</p>
+                            <p class="text-right">${{ Cart::subtotal() }}</p>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <p class="text-muted">IVA (16%):</p>
+                            <p class="text-right">${{ Cart::tax() }}</p>
+                        </div>
+                        <div class="d-flex justify-content-between font-weight-bold">
+                            <h5>Total:</h5>
+                            <h5 class="text-primary">${{ Cart::total() }}</h5>
                         </div>
                     </div>
                 </div>
 
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <img src="{{ asset('assets/images/logo.png') }}" class="logo-invoice img-fluid mb-3">
-                            <h5 class="mb-3">Hello, {{ $customer->name }}</h5>
-                        </div>
-                    </div>
+                <div class="card-footer bg-white text-center">
+                <form action="{{ route('invoice.generatePDF') }}" method="post" class="d-inline-block">
+    @csrf
+    <input type="hidden" name="customer_id" value="{{ $customer->id }}">
+    <button type="submit" class="btn btn-primary d-flex align-items-center px-4 py-2">
+        <i class="las la-print mr-2"></i>
+        <span>Generar PDF</span>
+    </button>
+</form>
 
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="table-responsive-sm">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Order Date</th>
-                                            <th scope="col">Order Status</th>
-                                            <th scope="col">Billing Address</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>{{ Carbon\Carbon::now()->format('M d, Y') }}</td>
-                                            <td><span class="badge badge-danger">Unpaid</span></td>
-                                            <td>
-                                                <p class="mb-0">{{ $customer->address }}<br>
-                                                    Shop Name: {{ $customer->shopname ? $customer->shopname : '-' }}<br>
-                                                    Phone: {{ $customer->phone }}<br>
-                                                    Email: {{ $customer->email }}<br>
-                                                </p>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <h5 class="mb-3">Order Summary</h5>
-                            <div class="table-responsive-lg">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center" scope="col">#</th>
-                                            <th scope="col">Item</th>
-                                            <th class="text-center" scope="col">Quantity</th>
-                                            <th class="text-center" scope="col">Price</th>
-                                            <th class="text-center" scope="col">Totals</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($content as $item)
-                                        <tr>
-                                            <th class="text-center" scope="row">{{ $loop->iteration }}</th>
-                                            <td>
-                                                <h6 class="mb-0">{{ $item->name }}</h6>
-                                            </td>
-                                            <td class="text-center">{{ $item->qty }}</td>
-                                            <td class="text-center">{{ $item->price }}</td>
-                                            <td class="text-center"><b>{{ $item->subtotal }}</b></td>
-                                        </tr>
-
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <b class="text-danger">Notes:</b>
-                            <p class="mb-0">It is a long established fact that a reader will be distracted by the readable content of a page
-                                when looking
-                                at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters,
-                                as opposed to using 'Content here, content here', making it look like readable English.</p>
-                        </div>
-                    </div>
-
-                    <div class="row mt-4 mb-3">
-                        <div class="offset-lg-8 col-lg-4">
-                            <div class="or-detail rounded">
-                                <div class="p-3">
-                                    <h5 class="mb-3">Order Details</h5>
-                                    <div class="mb-2">
-                                        <h6>Sub Total</h6>
-                                        <p>${{ Cart::subtotal() }}</p>
-                                    </div>
-                                    <div>
-                                        <h6>Vat (5%)</h6>
-                                        <p>${{ Cart::tax() }}</p>
-                                    </div>
-                                </div>
-                                <div class="ttl-amt py-2 px-3 d-flex justify-content-between align-items-center">
-                                    <h6>Total</h6>
-                                    <h3 class="text-primary font-weight-700">${{ Cart::total() }}</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Pagar</button>
                 </div>
             </div>
         </div>

@@ -13,6 +13,23 @@
                     </button>
                 </div>
             @endif
+            @if (session()->has('error'))
+                <div class="alert text-white bg-danger" role="alert">
+                    <div class="iq-alert-text">{{ session('error') }}</div>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+            @endif
+            @if (session()->has('warning'))
+                <div class="alert text-dark bg-warning" role="alert">
+                    <div class="iq-alert-text">{{ session('warning') }}</div>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+            @endif
+
             <div>
                 <h4 class="mb-3">Punto de Venta</h4>
             </div>
@@ -37,7 +54,7 @@
                             <form action="{{ route('pos.updateCart', $item->rowId) }}" method="POST">
                                 @csrf
                                 <div class="input-group">
-                                    <input type="number" class="form-control" name="qty" required value="{{ old('qty', $item->qty) }}">
+                                    <input type="number" class="form-control" name="qty" required value="{{ old('qty', $item->qty) }}" min="1" max="{{ $item->options->product_garage }}">
                                     <div class="input-group-append">
                                         <button type="submit" class="btn btn-success border-none" data-toggle="tooltip" data-placement="top" title="" data-original-title="Enviar"><i class="fas fa-check"></i></button>
                                     </div>
@@ -52,6 +69,7 @@
                     </tr>
                     @endforeach
                 </tbody>
+
             </table>
 
             <div class="container row text-center">
@@ -69,7 +87,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('pos.createInvoice') }}" method="POST">
+            <form action="{{ route('pos.createInvoice') }}" method="POST" onsubmit="return validateForm()">
                 @csrf
                 <div class="row mt-3">
                     <div class="col-md-12">
@@ -81,20 +99,37 @@
                                 @endforeach
                             </select>
                         </div>
-                        @error('customer_id')
-                        <div class="invalid-feedback">
-                            {{ $message }}
+                        <div id="customerError" class="invalid-feedback" style="display: none;">
+                            Por favor, seleccione un cliente.
                         </div>
-                        @enderror
                     </div>
                     <div class="col-md-12 mt-4">
                         <div class="d-flex flex-wrap align-items-center justify-content-center">
                             <a href="{{ route('customers.create') }}" class="btn btn-primary add-list mx-1">Agregar Cliente</a>
-                            <button type="submit" class="btn btn-success add-list mx-1">Crear Factura</button>
+                            <button type="submit" class="btn btn-success add-list mx-1" id="generateTicketBtn" @if(Cart::count() == 0) disabled @endif>Generar ticket</button>
+                        </div>
+                        <div id="productError" class="invalid-feedback text-center" style="display: none;">
+                            No se puede generar un ticket sin productos en el carrito.
                         </div>
                     </div>
                 </div>
             </form>
+
+<script>
+    function validateForm() {
+        var customerSelect = document.getElementById("customer_id");
+        var customerError = document.getElementById("customerError");
+
+        if (customerSelect.value === "" || customerSelect.value === "-- Seleccionar Cliente --") {
+            customerError.style.display = "block";
+            return false;
+        } else {
+            customerError.style.display = "none";
+            return true;
+        }
+    }
+</script>
+
         </div>
 
         <div class="col-lg-6 col-md-12">
@@ -120,7 +155,7 @@
                                     <input type="text" id="search" class="form-control" name="search" placeholder="Buscar producto" value="{{ request('search') }}">
                                     <div class="input-group-append">
                                         <button type="submit" class="input-group-text bg-primary"><i class="fa-solid fa-magnifying-glass font-size-20"></i></button>
-                                        <a href="{{ route('products.index') }}" class="input-group-text bg-danger"><i class="fa-solid fa-trash"></i></a>
+                                        <a href="{{ route('pos.index') }}" class="input-group-text bg-danger"><i class="fa-solid fa-trash"></i></a>
                                     </div>
                                 </div>
                             </div>
@@ -149,14 +184,16 @@
                                     <td>{{ $product->product_name }}</td>
                                     <td>{{ $product->selling_price }}</td>
                                     <td>
-                                        <form action="{{ route('pos.addCart') }}" method="POST"  style="margin-bottom: 5px">
-                                            @csrf
-                                            <input type="hidden" name="id" value="{{ $product->id }}">
-                                            <input type="hidden" name="name" value="{{ $product->product_name }}">
-                                            <input type="hidden" name="price" value="{{ $product->selling_price }}">
+                                    <form action="{{ route('pos.addCart') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="id" value="{{ $product->id }}">
+                                        <input type="hidden" name="name" value="{{ $product->product_name }}">
+                                        <input type="hidden" name="price" value="{{ $product->selling_price }}">
+                                        <input type="hidden" name="qty" value="1"> <!-- Cantidad predeterminada a 1 -->
 
-                                            <button type="submit" class="btn btn-primary border-none" data-toggle="tooltip" data-placement="top" title="" data-original-title="Agregar"><i class="far fa-plus mr-0"></i></button>
-                                        </form>
+                                        <button type="submit" class="btn btn-primary border-none" data-toggle="tooltip" data-placement="top" title="" data-original-title="Agregar"><i class="far fa-plus mr-0"></i></button>
+                                    </form>
+
                                     </td>
                                 </tr>
 
@@ -177,4 +214,40 @@
         </div>
     </div>
 </div>
+<script>
+    function validateForm() {
+        var customerSelect = document.getElementById("customer_id");
+        var customerError = document.getElementById("customerError");
+        var generateTicketBtn = document.getElementById("generateTicketBtn");
+        var productError = document.getElementById("productError");
+
+        if (customerSelect.value === "" || customerSelect.value === "-- Seleccionar Cliente --") {
+            customerError.style.display = "block";
+            return false;
+        } else {
+            customerError.style.display = "none";
+        }
+
+        if ({{ Cart::count() }} === 0) {
+            productError.style.display = "block";
+            return false;
+        } else {
+            productError.style.display = "none";
+        }
+
+        return true;
+    }
+
+    document.querySelectorAll('form.add-to-cart').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        var qtyInput = this.querySelector('input[name="qty"]');
+        var maxQty = parseInt(qtyInput.getAttribute('max'));
+
+        if (parseInt(qtyInput.value) > maxQty) {
+            e.preventDefault();
+            alert('Se ha agotado el inventario del producto seleccionado.');
+        }
+    });
+});
+</script>
 @endsection

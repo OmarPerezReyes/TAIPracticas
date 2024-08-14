@@ -30,6 +30,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+use App\Http\Controllers\InvoiceController;
+
+Route::post('/invoice/pdf', [InvoiceController::class, 'generatePDF'])->name('invoice.generatePDF');
+
+
 
 // DEFAULT DASHBOARD & PROFILE
 Route::middleware('auth')->group(function () {
@@ -101,7 +106,7 @@ Route::middleware(['permission:pos.menu'])->group(function () {
     Route::post('/pos/update/{rowId}', [PosController::class, 'updateCart'])->name('pos.updateCart');
     Route::get('/pos/delete/{rowId}', [PosController::class, 'deleteCart'])->name('pos.deleteCart');
     Route::post('/pos/invoice/create', [PosController::class, 'createInvoice'])->name('pos.createInvoice');
-    Route::post('/pos/invoice/print', [PosController::class, 'printInvoice'])->name('pos.printInvoice');
+    //Route::post('/pos/invoice/print', [PosController::class, 'printInvoice'])->name('pos.printInvoice');
 
     // Create Order
     Route::post('/pos/order', [OrderController::class, 'storeOrder'])->name('pos.storeOrder');
@@ -157,6 +162,11 @@ Route::middleware(['permission:roles.menu'])->group(function () {
     Route::get('/role/permission/{id}', [RoleController::class, 'rolePermissionEdit'])->name('rolePermission.edit');
     Route::put('/role/permission/{id}', [RoleController::class, 'rolePermissionUpdate'])->name('rolePermission.update');
     Route::delete('/role/permission/{id}', [RoleController::class, 'rolePermissionDestroy'])->name('rolePermission.destroy');
+});
+
+Route::post('/save-customer-in-session', function (Illuminate\Http\Request $request) {
+    session(['customer_id' => $request->customer_id]);
+    return response()->json(['status' => 'success']);
 });
 
 require __DIR__.'/auth.php';
