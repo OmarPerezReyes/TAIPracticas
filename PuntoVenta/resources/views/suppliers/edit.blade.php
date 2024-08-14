@@ -104,14 +104,22 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="account_number">Número de cuenta</label>
-                                <input type="text" class="form-control @error('account_number') is-invalid @enderror" id="account_number" name="account_number" value="{{ old('account_number', $supplier->account_number) }}" pattern="\d{4}-\d{4}-\d{4}-\d{4}" placeholder="xxxx-xxxx-xxxx-xxxx">
+                                <label for="account_number">Número de cuenta <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('account_number') is-invalid @enderror" 
+                                    id="account_number" 
+                                    name="account_number" 
+                                    value="{{ old('account_number', $supplier->account_number) }}" 
+                                    pattern="\d{16}" 
+                                    placeholder="Ingrese un número de 16 dígitos" 
+                                    required 
+                                    title="Debe ser un número de cuenta de 16 dígitos">
                                 @error('account_number')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                                 @enderror
                             </div>
+
                             
                             <div class="form-group col-md-6">
                                 <label for="city">Ciudad de origen <span class="text-danger">*</span></label>
