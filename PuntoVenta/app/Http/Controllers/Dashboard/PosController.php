@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use App\Models\Employee;
+use App\Models\Stock;
 
 
 class PosController extends Controller
@@ -198,38 +199,60 @@ class PosController extends Controller
 
         return redirect()->route('pos.index')->with('success', '¡Pedido completado con éxito!');
     }
+   
     public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'employee_id' => 'nullable|exists:employees,id',
-            'payment_method_id' => 'required|exists:payment_methods,id',
-            'amount_paid' => 'required|numeric|min:0',
-            'change' => 'nullable|numeric|min:0',
-            'total' => 'required|numeric|min:0',
+{
+    // Validar los datos del formulario
+    $validatedData = $request->validate([
+        'customer_id' => 'required|exists:customers,id',
+        'employee_id' => 'nullable|exists:employees,id',
+        'payment_method_id' => 'required|exists:payment_methods,id',
+        'amount_paid' => 'required|numeric|min:0',
+        'change' => 'nullable|numeric|min:0',
+        'total' => 'required|numeric|min:0',
+    ]);
+
+    // Crear una nueva orden
+    $order = new Order();
+    $order->customer_id = $validatedData['customer_id'];
+    $order->employee_id = $validatedData['employee_id'];
+    $order->total = $validatedData['total'];
+    $order->paid = $validatedData['amount_paid'];
+    $order->change = $validatedData['change'] ?? 0;
+    $order->save();
+
+    // Registrar el pago
+    $payment = new OrderPayment();
+    $payment->order_id = $order->id;
+    $payment->payment_method_id = $validatedData['payment_method_id'];
+    $payment->amount = $validatedData['amount_paid'];
+    $payment->save();
+
+    // Registrar la salida de stock para cada producto en la orden
+    foreach (Cart::content() as $item) {
+        // Asumimos que el modelo `Stock` está relacionado con el producto a través de `product_id`
+        // y que `Stock::create` es el método para agregar un nuevo registro de movimiento de inventario
+        Stock::create([
+            'product_id' => $item->id, // Ajusta esto según el modelo de datos real
+            'date' => now(),
+            'movement' => 'Salida',
+            'reason' => 'Venta de producto',
+            'quantity' => $item->qty, // Cantidad vendida
         ]);
-    
-        // Crear una nueva orden
-        $order = new Order();
-        $order->customer_id = $validatedData['customer_id'];
-        $order->employee_id = $validatedData['employee_id'];
-        $order->total = $validatedData['total'];
-        $order->paid = $validatedData['amount_paid'];
-        $order->change = $validatedData['change'] ?? 0;
-        $order->save();
-    
-        // Registrar el pago
-        $payment = new OrderPayment();
-        $payment->order_id = $order->id;
-        $payment->payment_method_id = $validatedData['payment_method_id'];
-        $payment->amount = $validatedData['amount_paid'];
-        $payment->save();
-    
-        // Vaciar el carrito
-        Cart::destroy();
-    
-        // Redirigir con mensaje de éxito
-        return redirect()->route('pos.index')->with('success', '¡Pago realizado y pedido finalizado con éxito!');
+
+        // Actualizar la cantidad en el inventario del producto
+        $product = Product::find($item->id); // Encuentra el producto por ID
+        if ($product) {
+            $product->product_garage -= $item->qty; // Resta la cantidad vendida del stock
+            $product->save(); // Guarda los cambios en la base de datos
+        }
     }
-    
+
+    // Vaciar el carrito
+    Cart::destroy();
+
+    // Redirigir con mensaje de éxito
+    return redirect()->route('pos.index')->with('success', '¡Pago realizado, pedido finalizado e inventario actualizado con éxito!');
+}
+
 }
