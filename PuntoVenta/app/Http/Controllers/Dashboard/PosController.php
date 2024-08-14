@@ -5,18 +5,18 @@ namespace App\Http\Controllers\Dashboard;
 use Carbon\Carbon;
 use App\Models\Product;
 use App\Models\Customer;
+use App\Models\Order;
+use App\Models\OrderPayment;
+use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
 use Gloudemans\Shoppingcart\Facades\Cart;
+use App\Models\Employee;
+
 
 class PosController extends Controller
 {
-    /**
-     * Muestra la vista principal del punto de venta con los productos y clientes disponibles.
-     *
-     * @return \Illuminate\View\View
-     */
     public function index()
     {
         $todayDate = Carbon::now(); // Obtiene la fecha y hora actual
@@ -38,12 +38,6 @@ class PosController extends Controller
         ]);
     }
 
-    /**
-     * Añade un producto al carrito de compras.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function addCart(Request $request)
     {
         $rules = [
@@ -90,17 +84,7 @@ class PosController extends Controller
     
         return redirect()->back()->with('success', '¡Producto añadido con éxito!');
     }
-    
 
-
-
-    /**
-     * Actualiza la cantidad de un producto en el carrito de compras.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param string $rowId
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function updateCart(Request $request, $rowId)
     {
         $validatedData = $request->validate([
@@ -123,16 +107,7 @@ class PosController extends Controller
     
         return redirect()->back()->with('success', 'Cantidad actualizada en el carrito.');
     }
-    
 
-    
-
-    /**
-     * Elimina un producto del carrito de compras.
-     *
-     * @param string $rowId
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function deleteCart(String $rowId)
     {
         // Elimina el producto del carrito
@@ -142,36 +117,31 @@ class PosController extends Controller
         return Redirect::back()->with('success', '¡Producto eliminado del carrito!');
     }
 
-    /**
-     * Crea una factura con los productos del carrito para un cliente específico.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\View\View
-     */
     public function createInvoice(Request $request)
     {
         $rules = [
             'customer_id' => 'required' // ID del cliente es requerido
         ];
-
+    
         // Valida los datos de la solicitud
         $validatedData = $request->validate($rules);
         $customer = Customer::where('id', $validatedData['customer_id'])->first(); // Obtiene el cliente
         $content = Cart::content(); // Obtiene el contenido del carrito
-
+    
+        // Asegúrate de obtener los empleados y métodos de pago
+        $employees = Employee::all();
+        $paymentMethods = PaymentMethod::all();
+    
         // Retorna la vista para crear la factura
         return view('pos.create-invoice', [
             'customer' => $customer,
-            'content' => $content
+            'content' => $content,
+            'employees' => $employees,
+            'paymentMethods' => $paymentMethods
         ]);
     }
+    
 
-    /**
-     * Imprime una factura con los productos del carrito para un cliente específico.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\View\View
-     */
     public function printInvoice(Request $request)
     {
         $rules = [
@@ -189,4 +159,77 @@ class PosController extends Controller
             'content' => $content
         ]);
     }
+
+    public function showPaymentForm()
+    {
+        return view('pos.payment-form', [
+            'paymentMethods' => PaymentMethod::all(),
+        ]);
+    }
+
+    public function processPayment(Request $request)
+    {
+        $validatedData = $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'user_id' => 'nullable|exists:users,id', // Assuming vendor user
+            'payment_method_id' => 'required|exists:payment_methods,id',
+            'amount_paid' => 'required|numeric|min:0',
+            'change' => 'required|numeric|min:0',
+        ]);
+
+        // Crear un nuevo pedido
+        $order = Order::create([
+            'customer_id' => $validatedData['customer_id'],
+            'user_id' => $validatedData['user_id'],
+            'total' => Cart::total(),
+            'paid' => $validatedData['amount_paid'],
+            'change' => $validatedData['change'],
+        ]);
+
+        // Registrar el pago
+        OrderPayment::create([
+            'order_id' => $order->id,
+            'payment_method_id' => $validatedData['payment_method_id'],
+            'amount' => $validatedData['amount_paid'],
+        ]);
+
+        // Vaciar el carrito
+        Cart::destroy();
+
+        return redirect()->route('pos.index')->with('success', '¡Pedido completado con éxito!');
+    }
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'employee_id' => 'nullable|exists:employees,id',
+            'payment_method_id' => 'required|exists:payment_methods,id',
+            'amount_paid' => 'required|numeric|min:0',
+            'change' => 'nullable|numeric|min:0',
+            'total' => 'required|numeric|min:0',
+        ]);
+    
+        // Crear una nueva orden
+        $order = new Order();
+        $order->customer_id = $validatedData['customer_id'];
+        $order->employee_id = $validatedData['employee_id'];
+        $order->total = $validatedData['total'];
+        $order->paid = $validatedData['amount_paid'];
+        $order->change = $validatedData['change'] ?? 0;
+        $order->save();
+    
+        // Registrar el pago
+        $payment = new OrderPayment();
+        $payment->order_id = $order->id;
+        $payment->payment_method_id = $validatedData['payment_method_id'];
+        $payment->amount = $validatedData['amount_paid'];
+        $payment->save();
+    
+        // Vaciar el carrito
+        Cart::destroy();
+    
+        // Redirigir con mensaje de éxito
+        return redirect()->route('pos.index')->with('success', '¡Pago realizado y pedido finalizado con éxito!');
+    }
+    
 }

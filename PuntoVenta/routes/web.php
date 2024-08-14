@@ -169,4 +169,7 @@ Route::post('/save-customer-in-session', function (Illuminate\Http\Request $requ
     return response()->json(['status' => 'success']);
 });
 
+Route::post('/orders', [PosController::class, 'store'])->name('orders.store');
+
+
 require __DIR__.'/auth.php';
