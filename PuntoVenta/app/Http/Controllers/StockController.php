@@ -18,9 +18,13 @@ class StockController extends Controller
         // Filtrado y paginación
         $stocks = Stock::with('product')
             ->filter($request->only('search'))  // Asegúrate de tener un scope filter en tu modelo Stock
+            
             ->sortable()  // Asegúrate de tener un scope sortable en tu modelo Stock
             ->paginate($request->get('row', 10))  // Default rows per page
             ->appends($request->query());
+            $sortBy = $request->input('sort_by', 'id'); // Ordenar por ID por defecto
+            $sortOrder = $request->input('sort_order', 'asc'); // Orden ascendente por defecto
+        
 
         return view('stock.index', [
             'stocks' => $stocks,

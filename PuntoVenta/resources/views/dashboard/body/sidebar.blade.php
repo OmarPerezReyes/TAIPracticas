@@ -37,6 +37,15 @@
                         </a>
                     </li>
                 @endif
+               
+                @if (auth()->user()->can('stock.manage'))
+                    <li class="{{ Request::is('compra*') ? 'active' : '' }}">
+                        <a href="{{ route('compra.index') }}" class="svg-icon">
+                            <i class="fa-solid fa-box"></i>
+                            <span class="ml-3">Compra</span>
+                        </a>
+                    </li>
+                @endif
                 <hr>
 
                 @if (auth()->user()->can('employee.menu'))

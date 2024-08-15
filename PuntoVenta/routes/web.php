@@ -14,6 +14,7 @@ use App\Http\Controllers\Dashboard\PosController;
 use App\Http\Controllers\Dashboard\RoleController;
 use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Dashboard\CRUDOrderController;
+use App\Http\Controllers\Dashboard\CompraController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\PaymentMethodController;
 
@@ -181,6 +182,15 @@ Route::get('crudorders/{order}/print', [CRUDOrderController::class, 'print'])->n
 Route::get('crudorders/{order}', [CRUDOrderController::class, 'show'])->name('crudorders.show');
 
 Route::post('/generate-order-pdf', [InvoiceController::class, 'generateOrderPDF'])->name('order.generatePDF');
+
+Route::get('/compra', [CompraController::class, 'index'])->name('compra.index');
+
+
+
+Route::get('/compra/manage', [CompraController::class, 'create'])->name('compra.manage');
+Route::post('/compra', [CompraController::class, 'store'])->name('compra.store');
+Route::get('/compra/export', [CompraController::class, 'exportData'])->name('compra.exportData');
+
 
 
 require __DIR__.'/auth.php';

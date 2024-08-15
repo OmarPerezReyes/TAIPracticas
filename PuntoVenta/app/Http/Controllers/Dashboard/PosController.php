@@ -164,53 +164,6 @@ class PosController extends Controller
         ]);
     }
 
-    public function showPaymentForm()
-    {
-        return view('pos.payment-form', [
-            'paymentMethods' => PaymentMethod::all(),
-        ]);
-    }
-
-    public function processPayment(Request $request)
-    {
-    $validatedData = $request->validate([
-        'customer_id' => 'required|exists:customers,id',
-        'user_id' => 'nullable|exists:users,id', // Assuming vendor user
-        'payment_method_id' => 'required|exists:payment_methods,id',
-        'amount_paid' => 'required|numeric|min:0',
-        'change' => 'required|numeric|min:0',
-    ]);
-
-    // Encontrar la última orden
-    $lastOrder = Order::latest('id')->first();
-  // Mostrar la última orden usando dd()
-  dd($lastOrder);
-    if (!$lastOrder) {
-        return redirect()->route('pos.index')->with('error', 'No hay órdenes para actualizar.');
-    }
-
-    // Actualizar la última orden
-    $lastOrder->update([
-        'customer_id' => $validatedData['customer_id'],
-        'user_id' => $validatedData['user_id'],
-        'total' => Cart::total(), // Si necesitas actualizar el total, puedes recalcularlo
-        'paid' => $validatedData['amount_paid'],
-        'change' => $validatedData['change'],
-    ]);
-
-    // Registrar el pago
-    OrderPayment::create([
-        'order_id' => $lastOrder->id,
-        'payment_method_id' => $validatedData['payment_method_id'],
-        'amount' => $validatedData['amount_paid'],
-    ]);
-
-    // Vaciar el carrito
-    Cart::destroy();
-
-    //return redirect()->route('pos.index')->with('success', '¡Pago registrado y orden actualizada con éxito!');
-}
-
    
     public function store(Request $request)
 {

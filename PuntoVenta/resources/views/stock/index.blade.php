@@ -68,30 +68,38 @@
         <div class="col-lg-12">
             <div class="table-responsive rounded mb-3">
                 <table class="table mb-0">
-                    <thead class="bg-white text-uppercase">
-                        <tr>
-                            <th>ID</th>
-                            <th>Producto</th>
-                            <th>
-                                <a href="{{ route('stocks.index', ['sort_by' => 'date', 'sort_order' => request('sort_order') === 'desc' ? 'asc' : 'desc']) }}">
-                                    Fecha
-                                    @if(request('sort_by') === 'date')
-                                        <i class="fa-solid fa-arrow-{{ request('sort_order') === 'desc' ? 'down' : 'up' }}"></i>
-                                    @endif
-                                </a>
-                            </th>
-                            <th>
-                                <a href="{{ route('stocks.index', ['sort_by' => 'movement', 'sort_order' => request('sort_order') === 'desc' ? 'asc' : 'desc']) }}">
-                                    Movimiento
-                                    @if(request('sort_by') === 'movement')
-                                        <i class="fa-solid fa-arrow-{{ request('sort_order') === 'desc' ? 'down' : 'up' }}"></i>
-                                    @endif
-                                </a>
-                            </th>
-                            <th>Motivo</th>
-                            <th>Cantidad</th>
-                        </tr>
-                    </thead>
+                <thead class="bg-white text-uppercase">
+                    <tr>
+                        <th>
+                            <a href="{{ route('stocks.index', ['sort_by' => 'id', 'sort_order' => request('sort_order') === 'desc' ? 'asc' : 'desc']) }}">
+                                ID
+                                @if(request('sort_by') === 'id')
+                                    <i class="fa-solid fa-arrow-{{ request('sort_order') === 'desc' ? 'down' : 'up' }}"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th>Producto</th>
+                        <th>
+                            <a href="{{ route('stocks.index', ['sort_by' => 'date', 'sort_order' => request('sort_order') === 'desc' ? 'asc' : 'desc']) }}">
+                                Fecha
+                                @if(request('sort_by') === 'date')
+                                    <i class="fa-solid fa-arrow-{{ request('sort_order') === 'desc' ? 'down' : 'up' }}"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ route('stocks.index', ['sort_by' => 'movement', 'sort_order' => request('sort_order') === 'desc' ? 'asc' : 'desc']) }}">
+                                Movimiento
+                                @if(request('sort_by') === 'movement')
+                                    <i class="fa-solid fa-arrow-{{ request('sort_order') === 'desc' ? 'down' : 'up' }}"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th>Motivo</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+
                     <tbody>
                         @forelse ($stocks as $stock)
                         <tr>
