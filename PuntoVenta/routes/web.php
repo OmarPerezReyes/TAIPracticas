@@ -196,6 +196,7 @@ Route::get('/categorias/exportar', [CategoryController::class, 'exportData'])->n
 Route::get('/metodos-de-pago/exportar', [PaymentMethodController::class, 'exportData'])->name('payment_methods.exportData');
 Route::get('/ordenes/exportar', [CRUDOrderController::class, 'exportData'])->name('crudorders.exportData');
 Route::get('/vendedores/exportar', [EmployeeController::class, 'exportData'])->name('employees.exportData');
+Route::get('/clientes/exportar', [CustomerController::class, 'exportData'])->name('customers.exportData');
 
 
 require __DIR__.'/auth.php';

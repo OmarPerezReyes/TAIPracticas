@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\DB; 
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class CustomerController extends Controller
 {
     /**
@@ -182,72 +185,96 @@ class CustomerController extends Controller
     }
 
 
-    // Update to handle customer data
-public function exportExcel($data, $headers)
-{
-    ini_set('max_execution_time', 0);
-    ini_set('memory_limit', '4000M');
+    /**
+     * Exporta los datos de clientes a un archivo Excel.
+     */
+    public function exportData(Request $request)
+    {
+        $query = Customer::query();
 
-    try {
-        $spreadSheet = new Spreadsheet();
-        $sheet = $spreadSheet->getActiveSheet();
-        
-        // Set default column width
-        $sheet->getDefaultColumnDimension()->setWidth(20);
+        // Filtrar por búsqueda
+        if ($search = $request->input('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%")
+                  ->orWhere('phone', 'like', "%$search%")
+                  ->orWhere('RFC', 'like', "%$search%")
+                  ->orWhere('razon_social', 'like', "%$search%")
+                  ->orWhere('codigo_postal', 'like', "%$search%")
+                  ->orWhere('regimen_fiscal', 'like', "%$search%");
+            });
+        }
 
-        // Add headers
-        $sheet->fromArray($headers, null, 'A1');
+        // Obtener los datos
+        $customers = $query->get();
 
-        // Add data
-        $sheet->fromArray($data, null, 'A2');
-
-        $Excel_writer = new Xls($spreadSheet);
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="Customers_ExportedData.xls"');
-        header('Cache-Control: max-age=0');
-        ob_end_clean();
-        $Excel_writer->save('php://output');
-        exit();
-    } catch (Exception $e) {
-        return;
-    }
-}
-
-// Update to reflect customer fields
-function exportData()
-{
-    $customers = Customer::all()->sortByDesc('id');
-
-    $headers = [
-        'No.',
-        'Photo',
-        'Name',
-        'Email',
-        'Phone',
-        'RFC',
-        'Razon Social',
-        'Codigo Postal',
-        'Regimen Fiscal'
-    ];
-
-    $data = [];
-
-    foreach ($customers as $customer) {
-        $data[] = [
-            (($customers->currentPage() * 10) - 10) + $loop->iteration,
-            $customer->photo ? asset('storage/customers/'.$customer->photo) : asset('assets/images/user/1.png'),
-            $customer->name,
-            $customer->email,
-            $customer->phone,
-            $customer->RFC,
-            $customer->razon_social,
-            $customer->codigo_postal,
-            $customer->regimen_fiscal,
+        // Crear una matriz para los datos de clientes
+        $headers = [
+            'No.',
+            'Foto',
+            'Nombre',
+            'Email',
+            'Teléfono',
+            'RFC',
+            'Razón Social',
+            'Código Postal',
+            'Régimen Fiscal'
         ];
+
+        $data = [];
+
+        foreach ($customers as $index => $customer) {
+            $data[] = [
+                $index + 1,
+                $customer->photo ? asset('storage/customers/' . $customer->photo) : asset('assets/images/user/1.png'),
+                $customer->name,
+                $customer->email,
+                $customer->phone,
+                $customer->RFC,
+                $customer->razon_social,
+                $customer->codigo_postal,
+                $customer->regimen_fiscal,
+            ];
+        }
+
+        // Exportar los datos a Excel
+        return $this->exportExcel($data, $headers);
     }
 
-    // Pass data and headers to exportExcel
-    $this->exportExcel($data, $headers);
-}
+    /**
+     * Maneja la exportación de datos a un archivo Excel.
+     */
+    private function exportExcel($data, $headers)
+    {
+        ini_set('max_execution_time', 0);
+        ini_set('memory_limit', '4000M');
+
+        try {
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            
+            // Ajustar el ancho de las columnas
+            $sheet->getDefaultColumnDimension()->setWidth(20);
+
+            // Agregar encabezados
+            $sheet->fromArray($headers, null, 'A1');
+
+            // Agregar datos
+            $sheet->fromArray($data, null, 'A2');
+
+            $writer = new Xlsx($spreadsheet);
+
+            // Configurar las cabeceras de la respuesta HTTP
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="Clientes_Exportados.xlsx"');
+            header('Cache-Control: max-age=0');
+
+            ob_end_clean(); // Limpiar el buffer de salida
+            $writer->save('php://output'); // Enviar el archivo a la salida
+            exit(); // Asegurarse de que el script se detenga después de enviar el archivo
+        } catch (\Exception $e) {
+            return redirect()->route('customers.index')->with('error', 'Error al exportar los datos.');
+        }
+    }
 
 }
