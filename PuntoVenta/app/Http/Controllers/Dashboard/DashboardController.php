@@ -9,14 +9,15 @@ use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {
-    public function index(){
-        return view('dashboard.index'/*, [
-            'total_paid' => Order::sum('pay'),
-            'total_due' => Order::sum('due'),
-            'complete_orders' => Order::where('order_status', 'complete')->get(),
-            'products' => Product::orderBy('product_garage')->take(5)->get(),
-            'new_products' => Product::orderBy('buying_date')->take(2)->get(),
-    ]*/
-);
+     /**
+     * Display the dashboard.
+     */
+    public function index()
+    {
+        $totalProducts = Product::count(); // Consulta la cantidad total de productos
+
+        return view('dashboard.index', [
+            'totalProducts' => $totalProducts, // Pasa la cantidad de productos a la vista
+        ]);
     }
 }

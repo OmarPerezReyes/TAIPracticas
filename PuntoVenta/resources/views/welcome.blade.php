@@ -72,7 +72,7 @@
         </div>
         
         <!-- Content -->
-        <h1 class="text-2xl font-bold mb-4">Punto de venta de cafetería</h1>
+        <h1 class="text-2xl font-bold mb-4">Punto de venta</h1>
         <p class="text-gray-600 mb-6">Realizada en Laravel.</p>
         
         @if (Route::has('login'))
