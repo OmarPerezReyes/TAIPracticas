@@ -9,6 +9,9 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class SupplierController extends Controller
 {
     /**
@@ -158,5 +161,93 @@ class SupplierController extends Controller
         $supplier->delete();
     
         return Redirect::route('suppliers.index')->with('success', 'Datos del proveedor eliminados correctamente!');
+    }
+
+     /**
+     * Exporta los datos de proveedores a un archivo Excel.
+     */
+    public function exportData(Request $request)
+    {
+        $query = Supplier::query();
+
+        if ($search = $request->input('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%")
+                  ->orWhere('phone', 'like', "%$search%")
+                  ->orWhere('shopname', 'like', "%$search%")
+                  ->orWhere('type', 'like', "%$search%")
+                  ->orWhere('city', 'like', "%$search%");
+            });
+        }
+
+        $suppliers = $query->get();
+
+        $headers = [
+            'No.',
+            'Foto',
+            'Nombre',
+            'Email',
+            'Teléfono',
+            'Nombre de la Tienda',
+            'Tipo',
+            'Titular de Cuenta',
+            'Número de Cuenta',
+            'Nombre del Banco',
+            'Ciudad',
+            'Dirección'
+        ];
+
+        $data = [];
+
+        foreach ($suppliers as $index => $supplier) {
+            $data[] = [
+                $index + 1,
+                $supplier->photo ? asset('storage/suppliers/' . $supplier->photo) : asset('assets/images/user/1.png'),
+                $supplier->name,
+                $supplier->email,
+                $supplier->phone,
+                $supplier->shopname,
+                $supplier->type,
+                $supplier->account_holder,
+                $supplier->account_number,
+                $supplier->bank_name,
+                $supplier->city,
+                $supplier->address,
+            ];
+        }
+
+        return $this->exportExcel($data, $headers);
+    }
+
+    /**
+     * Maneja la exportación de datos a un archivo Excel.
+     */
+    private function exportExcel($data, $headers)
+    {
+        ini_set('max_execution_time', 0);
+        ini_set('memory_limit', '4000M');
+
+        try {
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            
+            $sheet->getDefaultColumnDimension()->setWidth(20);
+
+            $sheet->fromArray($headers, null, 'A1');
+            $sheet->fromArray($data, null, 'A2');
+
+            $writer = new Xlsx($spreadsheet);
+
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="Proveedores_Exportados.xlsx"');
+            header('Cache-Control: max-age=0');
+
+            ob_end_clean();
+            $writer->save('php://output');
+            exit();
+        } catch (\Exception $e) {
+            return redirect()->route('suppliers.index')->with('error', 'Error al exportar los datos.');
+        }
     }
 }

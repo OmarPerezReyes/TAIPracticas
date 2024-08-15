@@ -27,6 +27,7 @@
                     <h4 class="mb-3">Lista de proveedores</h4>
                 </div>
                 <div>
+                    <a href="{{ route('suppliers.exportData') }}" class="btn btn-warning add-list">Exportar</a>
                     <a href="{{ route('suppliers.create') }}" class="btn btn-primary add-list"><i class="fa-solid fa-plus mr-3"></i>Agregar proveedor</a>
                     <a href="{{ route('suppliers.index') }}" class="btn btn-danger add-list"><i class="fa-solid fa-trash mr-3"></i>Reiniciar búsqueda</a>
                 </div>
