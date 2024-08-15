@@ -13,6 +13,7 @@ use App\Http\Controllers\Dashboard\OrderController;
 use App\Http\Controllers\Dashboard\PosController;
 use App\Http\Controllers\Dashboard\RoleController;
 use App\Http\Controllers\Dashboard\UserController;
+use App\Http\Controllers\Dashboard\CRUDOrderController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\PaymentMethodController;
 
@@ -172,7 +173,13 @@ Route::post('/save-customer-in-session', function (Illuminate\Http\Request $requ
 
 Route::post('/orders', [PosController::class, 'store'])->name('orders.store');
 
-
 Route::resource('payment_methods', PaymentMethodController::class);
+
+Route::resource('crudorders', CRUDOrderController::class);
+// Rutas adicionales para imprimir y ver detalles
+Route::get('crudorders/{order}/print', [CRUDOrderController::class, 'print'])->name('crudorders.print');
+Route::get('crudorders/{order}', [CRUDOrderController::class, 'show'])->name('crudorders.show');
+
+
 
 require __DIR__.'/auth.php';

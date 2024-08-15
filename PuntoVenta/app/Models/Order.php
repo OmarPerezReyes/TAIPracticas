@@ -25,4 +25,23 @@ class Order extends Model
     {
         return $this->hasMany(OrderPayment::class);
     }
+
+    public function orderPayments()
+    {
+        return $this->hasMany(OrderPayment::class);
+    }
+
+    public function paymentMethod()
+    {
+        // Asumiendo que cada orden tiene un solo método de pago
+        return $this->hasOneThrough(
+            PaymentMethod::class, 
+            OrderPayment::class, 
+            'order_id', // Foreign key on OrderPayment table
+            'id', // Foreign key on PaymentMethod table
+            'id', // Local key on Order table
+            'payment_method_id' // Local key on OrderPayment table
+        );
+    }
+
 }

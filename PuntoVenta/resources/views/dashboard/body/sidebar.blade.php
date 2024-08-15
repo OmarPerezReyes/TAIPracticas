@@ -64,6 +64,13 @@
                     </li>
                 @endif
 
+                @if (auth()->user()->can('employee.menu'))
+                    <li class="{{ Request::is(['crudorders*']) ? 'active' : '' }}">
+                        <a href="{{ route('crudorders.index') }}" class="svg-icon">
+                            <i class="fa-solid fa-box"></i><span>Órdenes</span>
+                        </a>
+                    </li>
+                @endif
 
                 <hr>
 
