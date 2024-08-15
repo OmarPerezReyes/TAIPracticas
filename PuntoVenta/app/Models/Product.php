@@ -54,4 +54,10 @@ class Product extends Model
             return $query->where('product_name', 'like', '%' . $search . '%');
         });
     }
+
+    // Relación con el modelo DetailsOrder
+    public function detailsOrders()
+    {
+        return $this->hasMany(DetailsOrder::class, 'product_id');
+    }
 }

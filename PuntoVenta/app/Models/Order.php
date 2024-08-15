@@ -44,4 +44,8 @@ class Order extends Model
         );
     }
 
+    public function details()
+    {
+        return $this->hasMany(DetailsOrder::class);
+    }
 }

@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Customer;
 use App\Models\Employee;
 use App\Models\OrderPayment;
+use App\Models\DetailsOrder;
 use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -87,11 +88,35 @@ class CRUDOrderController extends Controller
         return redirect()->route('crudorders.index')->with('success', '¡Orden creada con éxito!');
     }
 
-    // Muestra los detalles de una orden específica
-    public function show(Order $order)
+    public function show($id)
     {
-        return view('crudorders.show', compact('order')); // Asegúrate de usar la vista correcta
+        // Obtén la orden con el ID proporcionado, incluyendo las relaciones
+        $order = Order::with('customer', 'paymentMethod', 'employee')->find($id);
+    
+        // Verifica si la orden existe
+        if (!$order) {
+            abort(404, 'Orden no encontrada.');
+        }
+    
+        // Carga los detalles de la orden usando el ID de la orden
+        $orderDetails = DetailsOrder::where('order_id', $order->id)
+                                    ->with('product')  // Asegúrate de que también obtienes los datos del producto
+                                    ->get();
+    
+        // Verifica los datos obtenidos antes de desplegar la vista
+        /*dd([
+            'Order' => $order,
+            'Order Details' => $orderDetails,
+            'Customer' => $order->customer,
+            'Payment Method' => $order->paymentMethod,
+            'Employee' => $order->employee,
+        ]);*/
+    
+        // Descomenta la siguiente línea para devolver la vista una vez confirmados los datos
+        return view('crudorders.show', compact('order', 'orderDetails'));
     }
+    
+
 
     // Muestra el formulario para editar una orden existente
     public function edit(Order $order)

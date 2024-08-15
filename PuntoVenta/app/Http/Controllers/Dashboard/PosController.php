@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Redirect;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use App\Models\Employee;
 use App\Models\Stock;
+use App\Models\DetailsOrder;
 
 
 class PosController extends Controller
@@ -123,16 +124,17 @@ class PosController extends Controller
         $rules = [
             'customer_id' => 'required' // ID del cliente es requerido
         ];
-    
+
         // Valida los datos de la solicitud
         $validatedData = $request->validate($rules);
         $customer = Customer::where('id', $validatedData['customer_id'])->first(); // Obtiene el cliente
         $content = Cart::content(); // Obtiene el contenido del carrito
-    
+
+
         // Asegúrate de obtener los empleados y métodos de pago
         $employees = Employee::all();
         $paymentMethods = PaymentMethod::all();
-    
+
         // Retorna la vista para crear la factura
         return view('pos.create-invoice', [
             'customer' => $customer,
@@ -141,6 +143,7 @@ class PosController extends Controller
             'paymentMethods' => $paymentMethods
         ]);
     }
+
     
 
     public function printInvoice(Request $request)
@@ -170,35 +173,44 @@ class PosController extends Controller
 
     public function processPayment(Request $request)
     {
-        $validatedData = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'user_id' => 'nullable|exists:users,id', // Assuming vendor user
-            'payment_method_id' => 'required|exists:payment_methods,id',
-            'amount_paid' => 'required|numeric|min:0',
-            'change' => 'required|numeric|min:0',
-        ]);
+    $validatedData = $request->validate([
+        'customer_id' => 'required|exists:customers,id',
+        'user_id' => 'nullable|exists:users,id', // Assuming vendor user
+        'payment_method_id' => 'required|exists:payment_methods,id',
+        'amount_paid' => 'required|numeric|min:0',
+        'change' => 'required|numeric|min:0',
+    ]);
 
-        // Crear un nuevo pedido
-        $order = Order::create([
-            'customer_id' => $validatedData['customer_id'],
-            'user_id' => $validatedData['user_id'],
-            'total' => Cart::total(),
-            'paid' => $validatedData['amount_paid'],
-            'change' => $validatedData['change'],
-        ]);
-
-        // Registrar el pago
-        OrderPayment::create([
-            'order_id' => $order->id,
-            'payment_method_id' => $validatedData['payment_method_id'],
-            'amount' => $validatedData['amount_paid'],
-        ]);
-
-        // Vaciar el carrito
-        Cart::destroy();
-
-        return redirect()->route('pos.index')->with('success', '¡Pedido completado con éxito!');
+    // Encontrar la última orden
+    $lastOrder = Order::latest('id')->first();
+  // Mostrar la última orden usando dd()
+  dd($lastOrder);
+    if (!$lastOrder) {
+        return redirect()->route('pos.index')->with('error', 'No hay órdenes para actualizar.');
     }
+
+    // Actualizar la última orden
+    $lastOrder->update([
+        'customer_id' => $validatedData['customer_id'],
+        'user_id' => $validatedData['user_id'],
+        'total' => Cart::total(), // Si necesitas actualizar el total, puedes recalcularlo
+        'paid' => $validatedData['amount_paid'],
+        'change' => $validatedData['change'],
+    ]);
+
+    // Registrar el pago
+    OrderPayment::create([
+        'order_id' => $lastOrder->id,
+        'payment_method_id' => $validatedData['payment_method_id'],
+        'amount' => $validatedData['amount_paid'],
+    ]);
+
+    // Vaciar el carrito
+    Cart::destroy();
+
+    //return redirect()->route('pos.index')->with('success', '¡Pago registrado y orden actualizada con éxito!');
+}
+
    
     public function store(Request $request)
 {
@@ -227,6 +239,19 @@ class PosController extends Controller
     $payment->payment_method_id = $validatedData['payment_method_id'];
     $payment->amount = $validatedData['amount_paid'];
     $payment->save();
+
+    $content = Cart::content(); // Obtiene el contenido del carrito
+
+        
+    // Guardar los detalles del pedido
+    foreach ($content as $item) {
+        DetailsOrder::create([
+            'order_id' => $order->id,
+            'product_id' => $item->id,
+            'quantity' => $item->qty,
+            'price' => $item->price,
+        ]);
+    }
 
     // Registrar la salida de stock para cada producto en la orden
     foreach (Cart::content() as $item) {
