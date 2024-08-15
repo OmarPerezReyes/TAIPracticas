@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class CategoryController extends Controller
 {
     /**
@@ -108,5 +111,61 @@ class CategoryController extends Controller
         ->with('success', 'Categoría eliminada con éxito.');
 }
 
+
+/**
+     * Exporta los datos de categorías a un archivo Excel.
+     */
+    public function exportData(Request $request)
+    {
+        // Obtener todos los datos de categorías con filtrado si es necesario
+        $categories = Category::filter($request->only('search')) // Aplica el filtro de búsqueda si existe
+            ->orderBy('id') // Ordena por ID por defecto
+            ->get(); // Obtén todos los datos en lugar de paginados
+
+        // Crear una matriz para los datos de categorías
+        $category_array = [
+            ['ID', 'Nombre', 'Slug'],
+        ];
+
+        // Llena la matriz con los datos de categorías
+        foreach ($categories as $category) {
+            $category_array[] = [
+                $category->id,
+                $category->name,
+                $category->slug,
+            ];
+        }
+
+        // Exportar los datos a Excel
+        return $this->exportExcel($category_array);
+    }
+
+    /**
+     * Maneja la exportación de datos a un archivo Excel.
+     */
+    private function exportExcel($data)
+    {
+        ini_set('max_execution_time', 0); // Evita el tiempo máximo de ejecución
+        ini_set('memory_limit', '4000M'); // Ajusta el límite de memoria
+
+        try {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->getActiveSheet()->fromArray($data);
+            $spreadsheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+
+            $writer = new Xlsx($spreadsheet);
+
+            // Configura las cabeceras de la respuesta HTTP
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="Categories_ExportedData.xlsx"');
+            header('Cache-Control: max-age=0');
+
+            ob_end_clean(); // Limpia el buffer de salida
+            $writer->save('php://output'); // Envía el archivo a la salida
+            exit(); // Asegúrate de que el script se detenga después de enviar el archivo
+        } catch (\Exception $e) {
+            return Redirect::route('categories.index')->with('error', 'Error al exportar los datos.');
+        }
+    }
     
 }

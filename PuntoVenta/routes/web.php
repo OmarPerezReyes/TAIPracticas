@@ -192,5 +192,7 @@ Route::post('/compra', [CompraController::class, 'store'])->name('compra.store')
 Route::get('/compra/export', [CompraController::class, 'exportData'])->name('compra.exportData');
 
 
+Route::get('/categorias/exportar', [CategoryController::class, 'exportData'])->name('categories.exportData');
+
 
 require __DIR__.'/auth.php';
