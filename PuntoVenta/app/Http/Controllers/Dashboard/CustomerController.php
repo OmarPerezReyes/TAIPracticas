@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
-
+use Illuminate\Support\Facades\DB; 
 
 class CustomerController extends Controller
 {
@@ -152,21 +152,33 @@ class CustomerController extends Controller
         return Redirect::route('customers.index')->with('success', 'Datos del cliente actualizados!');
     }
 
-    /**
+   /**
      * Remove the specified resource from storage.
      */
     public function destroy(Customer $customer)
     {
-        /**
-         * Delete photo if exists.
-         */
-        if($customer->photo){
+        // Verifica si el cliente tiene órdenes asociadas
+        $hasOrders = DB::table('orders')
+                       ->where('customer_id', $customer->id)
+                       ->exists();
+
+        if ($hasOrders) {
+            // Redirige con un mensaje de error si el cliente tiene órdenes asociadas
+            return Redirect::route('customers.index')
+                           ->with('error', 'No se puede eliminar el cliente porque tiene órdenes asociadas.');
+        }
+
+        // Elimina la foto si existe
+        if ($customer->photo) {
             Storage::delete('public/customers/' . $customer->photo);
         }
 
+        // Elimina el cliente
         Customer::destroy($customer->id);
 
-        return Redirect::route('customers.index')->with('success', 'Datos del cliente eliminados!');
+        // Redirige con un mensaje de éxito
+        return Redirect::route('customers.index')
+                       ->with('success', 'Datos del cliente eliminados!');
     }
 
 

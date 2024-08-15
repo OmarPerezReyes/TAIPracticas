@@ -12,6 +12,15 @@
                     </button>
                 </div>
             @endif
+            @if (session()->has('error'))
+                <div class="alert text-white bg-danger" role="alert">
+                    <div class="iq-alert-text">{{ session('error') }}</div>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+            @endif
+
             <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
                 <div>
                     <h4 class="mb-3">Lista de vendedores</h4>

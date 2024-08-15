@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeController extends Controller
 {
@@ -122,20 +123,32 @@ class EmployeeController extends Controller
         return Redirect::route('employees.index')->with('success', 'Datos del vendedor actualizados!');
     }
 
-    /**
+   /**
      * Remove the specified resource from storage.
      */
     public function destroy(Employee $employee)
     {
-        /**
-         * Delete photo if exists.
-         */
-        if($employee->photo){
+        // Verifica si el empleado tiene órdenes asociadas
+        $hasOrders = DB::table('orders')
+                       ->where('employee_id', $employee->id)
+                       ->exists();
+
+        if ($hasOrders) {
+            // Redirige con un mensaje de error si el empleado tiene órdenes asociadas
+            return Redirect::route('employees.index')
+                           ->with('error', 'No se puede eliminar el vendedor porque tiene órdenes asociadas.');
+        }
+
+        // Elimina la foto si existe
+        if ($employee->photo) {
             Storage::delete('public/employees/' . $employee->photo);
         }
 
+        // Elimina el empleado
         Employee::destroy($employee->id);
 
-        return Redirect::route('employees.index')->with('success', 'Datos del vendedor eliminados!');
+        // Redirige con un mensaje de éxito
+        return Redirect::route('employees.index')
+                       ->with('success', 'Datos del vendedor eliminados!');
     }
 }
