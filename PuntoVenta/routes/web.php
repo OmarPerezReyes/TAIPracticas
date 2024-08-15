@@ -180,6 +180,7 @@ Route::resource('crudorders', CRUDOrderController::class);
 Route::get('crudorders/{order}/print', [CRUDOrderController::class, 'print'])->name('crudorders.print');
 Route::get('crudorders/{order}', [CRUDOrderController::class, 'show'])->name('crudorders.show');
 
+Route::post('/generate-order-pdf', [InvoiceController::class, 'generateOrderPDF'])->name('order.generatePDF');
 
 
 require __DIR__.'/auth.php';

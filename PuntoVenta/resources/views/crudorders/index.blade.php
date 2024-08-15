@@ -17,43 +17,41 @@
                     <h4 class="mb-3">Lista de Pedidos Completos</h4>
                 </div>
                 <div>
-                    <a href="{{ route('crudorders.index') }}" class="btn btn-danger add-list"><i class="fa-solid fa-trash mr-3"></i>Limpiar Búsqueda</a>
+                    <a href="{{ route('crudorders.index') }}" class="btn btn-danger add-list">
+                        <i class="fa-solid fa-trash mr-3"></i>Limpiar Búsqueda
+                    </a>
                 </div>
             </div>
         </div>
 
         <div class="col-lg-12">
-        <form action="{{ route('crudorders.index') }}" method="get">
-    <div class="d-flex flex-wrap align-items-center justify-content-between">
-        <div class="form-group row">
-            <label for="row" class="col-sm-3 align-self-center">Filas:</label>
-            <div class="col-sm-9">
-                <select class="form-control" name="row">
-                    <option value="10" @if(request('row') == '10')selected="selected"@endif>10</option>
-                    <option value="25" @if(request('row') == '25')selected="selected"@endif>25</option>
-                    <option value="50" @if(request('row') == '50')selected="selected"@endif>50</option>
-                    <option value="100" @if(request('row') == '100')selected="selected"@endif>100</option>
-                </select>
-            </div>
-        </div>
+            <form action="{{ route('crudorders.index') }}" method="get">
+                <div class="d-flex flex-wrap align-items-center justify-content-between">
+                    <div class="form-group row">
+                        <label for="row" class="col-sm-3 align-self-center">Filas:</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="row">
+                                <option value="10" @if(request('row') == '10')selected="selected"@endif>10</option>
+                                <option value="25" @if(request('row') == '25')selected="selected"@endif>25</option>
+                                <option value="50" @if(request('row') == '50')selected="selected"@endif>50</option>
+                                <option value="100" @if(request('row') == '100')selected="selected"@endif>100</option>
+                            </select>
+                        </div>
+                    </div>
 
-        <div class="form-group row">
-            <label class="control-label col-sm-3 align-self-center" for="search">Buscar:</label>
-            <div class="col-sm-8">
-                <div class="input-group">
-                    <input type="text" id="search" class="form-control" name="search" placeholder="Buscar pedido" value="{{ request('search') }}">
-                    <div class="input-group-append">
-                        <button type="submit" class="input-group-text bg-primary"><i class="fa-solid fa-magnifying-glass font-size-20"></i></button>
+                    <div class="form-group row">
+                        <label class="control-label col-sm-3 align-self-center" for="search">Buscar:</label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input type="text" id="search" class="form-control" name="search" placeholder="Buscar pedido" value="{{ request('search') }}">
+                                <div class="input-group-append">
+                                    <button type="submit" class="input-group-text bg-primary"><i class="fa-solid fa-magnifying-glass font-size-20"></i></button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        
-      
-    </div>
-</form>
-
-
+            </form>
         </div>
 
         <div class="col-lg-12">
@@ -92,9 +90,14 @@
                                     <a class="btn btn-info mr-2" data-toggle="tooltip" data-placement="top" title="Detalles" href="{{ route('crudorders.show', $order->id) }}">
                                         Detalles
                                     </a>
-                                    <a class="btn btn-success mr-2" data-toggle="tooltip" data-placement="top" title="Imprimir" href="{{ route('crudorders.print', $order->id) }}">
-                                        Imprimir
-                                    </a>
+                                    <form action="{{ route('order.generatePDF') }}" method="post" class="d-inline-block">
+                                        @csrf
+                                        <input type="hidden" name="order_id" value="{{ $order->id }}">
+                                        <button type="submit" class="btn btn-success d-flex align-items-center px-4 py-2" data-toggle="tooltip" data-placement="top" title="Generar PDF">
+                                            <i class="fa-solid fa-file-pdf mr-2"></i>
+                                            PDF
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>

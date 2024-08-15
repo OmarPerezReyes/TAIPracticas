@@ -74,7 +74,7 @@
                                 <td class="text-left">{{ $item->product->product_name }}</td>
                                 <td class="text-center">{{ $item->quantity }}</td>
                                 <td class="text-center">{{ $item->price }}</td>
-                                <td class="text-right">{{ $item->quantity * $item->price }}</td>
+                                <td class="text-right">{{ number_format($item->quantity * $item->price, 2) }}</td>
                                 <td class="text-center">
                                     <img class="avatar-40 rounded" src="{{ $item->product->product_image ? asset('storage/products/'.$item->product->product_image) : asset('assets/images/product/default.webp') }}">
                                 </td>
@@ -90,7 +90,7 @@
                         <div class="col-md-6">
                             <h6>Total sin IVA: {{ number_format($totalWithVAT, 2) }}</h6>
                             <h6>IVA (16%): {{ number_format($totalWithVAT * .16, 2) }}</h6>
-                            <h5>Total con IVA: {{ $order->total }}</h5>
+                            <h5>Total con IVA: {{ number_format($order->total, 2) }}</h5>
                         </div>
                     </div>
                 </div>
@@ -111,6 +111,19 @@
                 </div>
             </div>
         @endif
+
+       <!-- Formulario para Generar PDF -->
+<div class="col-lg-12 text-center" style="margin-top: 20px; margin-bottom: 20px;">
+    <form action="{{ route('order.generatePDF') }}" method="post" class="d-inline-block">
+        @csrf
+        <input type="hidden" name="order_id" value="{{ $order->id }}">
+        <button type="submit" class="btn btn-primary d-flex align-items-center px-4 py-2">
+            <i class="las la-print mr-2"></i>
+            <span>Generar PDF</span>
+        </button>
+    </form>
+</div>
+
     </div>
 </div>
 @endsection
