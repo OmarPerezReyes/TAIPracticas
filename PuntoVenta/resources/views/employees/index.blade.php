@@ -26,6 +26,8 @@
                     <h4 class="mb-3">Lista de vendedores</h4>
                 </div>
                 <div>
+                <a href="{{ route('employees.exportData') }}" class="btn btn-warning add-list">Exportar</a>
+
                 <a href="{{ route('employees.create') }}" class="btn btn-primary add-list"><i class="fa-solid fa-plus mr-3"></i>Agregar vendedor</a>
                 <a href="{{ route('employees.index') }}" class="btn btn-danger add-list"><i class="fa-solid fa-trash mr-3"></i>Reiniciar búsqueda</a>
                 </div>
