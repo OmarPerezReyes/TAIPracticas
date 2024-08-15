@@ -193,6 +193,8 @@ Route::get('/compra/export', [CompraController::class, 'exportData'])->name('com
 
 
 Route::get('/categorias/exportar', [CategoryController::class, 'exportData'])->name('categories.exportData');
+Route::get('/metodos-de-pago/exportar', [PaymentMethodController::class, 'exportData'])->name('payment_methods.exportData');
+Route::get('/ordenes/exportar', [CRUDOrderController::class, 'exportData'])->name('crudorders.exportData');
 
 
 require __DIR__.'/auth.php';

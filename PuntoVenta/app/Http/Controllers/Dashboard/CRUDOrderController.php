@@ -12,6 +12,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redirect;
 
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class CRUDOrderController extends Controller
 {
     public function index(Request $request)
@@ -165,5 +169,87 @@ class CRUDOrderController extends Controller
         OrderPayment::where('order_id', $order->id)->delete();
 
         return redirect()->route('crudorders.index')->with('success', '¡Orden eliminada con éxito!');
+    }
+
+    /**
+     * Exporta los datos de órdenes a un archivo Excel.
+     */
+    public function exportData(Request $request)
+    {
+        $query = Order::query()
+            ->with('customer', 'employee', 'orderPayments.paymentMethod');
+
+        // Filtrar por búsqueda
+        if ($search = $request->input('search')) {
+            $query->where(function($q) use ($search) {
+                $q->whereHas('customer', function($q) use ($search) {
+                    $q->where('name', 'like', "%$search%");
+                })
+                ->orWhereHas('employee', function($q) use ($search) {
+                    $q->where('name', 'like', "%$search%");
+                })
+                ->orWhereHas('orderPayments.paymentMethod', function($q) use ($search) {
+                    $q->where('name', 'like', "%$search%");
+                });
+            });
+        }
+
+        // Ordenar
+        if ($sortBy = $request->input('sort_by')) {
+            $sortDirection = $request->input('sort_direction', 'asc'); // 'asc' o 'desc'
+            $query->orderBy($sortBy, $sortDirection);
+        }
+
+        // Obtener los datos
+        $orders = $query->get();
+
+        // Crear una matriz para los datos de órdenes
+        $orderArray = [
+            ['ID', 'Cliente', 'Empleado', 'Método de Pago', 'Monto Pagado', 'Cambio', 'Total'],
+        ];
+
+        // Llena la matriz con los datos de órdenes
+        foreach ($orders as $order) {
+            $orderArray[] = [
+                $order->id,
+                $order->customer->name ?? 'N/A',
+                $order->employee->name ?? 'N/A',
+                $order->orderPayments->first()->paymentMethod->name ?? 'N/A',
+                $order->paid,
+                $order->change,
+                $order->total,
+            ];
+        }
+
+        // Exportar los datos a Excel
+        return $this->exportExcel($orderArray);
+    }
+
+    /**
+     * Maneja la exportación de datos a un archivo Excel.
+     */
+    private function exportExcel($data)
+    {
+        ini_set('max_execution_time', 0); // Evita el tiempo máximo de ejecución
+        ini_set('memory_limit', '4000M'); // Ajusta el límite de memoria
+
+        try {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->getActiveSheet()->fromArray($data);
+            $spreadsheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+
+            $writer = new Xlsx($spreadsheet);
+
+            // Configura las cabeceras de la respuesta HTTP
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="Orders_ExportedData.xlsx"');
+            header('Cache-Control: max-age=0');
+
+            ob_end_clean(); // Limpia el buffer de salida
+            $writer->save('php://output'); // Envía el archivo a la salida
+            exit(); // Asegúrate de que el script se detenga después de enviar el archivo
+        } catch (\Exception $e) {
+            return redirect()->route('crudorders.index')->with('error', 'Error al exportar los datos.');
+        }
     }
 }

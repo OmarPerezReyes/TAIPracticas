@@ -17,6 +17,8 @@
                     <h4 class="mb-3">Lista de Pedidos Completos</h4>
                 </div>
                 <div>
+                <a href="{{ route('crudorders.exportData') }}" class="btn btn-warning add-list">Exportar</a>
+
                     <a href="{{ route('crudorders.index') }}" class="btn btn-danger add-list">
                         <i class="fa-solid fa-trash mr-3"></i>Limpiar Búsqueda
                     </a>

@@ -28,6 +28,7 @@
                 </div>
 
                 <div>
+                    <a href="{{ route('payment_methods.exportData') }}" class="btn btn-warning add-list">Exportar</a>
                     <a href="{{ route('payment_methods.create') }}" class="btn btn-primary add-list"><i class="fas fa-plus mr-3"></i>Crear Método de Pago</a>
                     <a href="{{ route('payment_methods.index') }}" class="btn btn-danger add-list"><i class="fa-solid fa-trash mr-3"></i>Reiniciar búsqueda</a>
                 </div>
