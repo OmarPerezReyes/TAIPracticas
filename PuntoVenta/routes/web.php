@@ -14,6 +14,7 @@ use App\Http\Controllers\Dashboard\PosController;
 use App\Http\Controllers\Dashboard\RoleController;
 use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\PaymentMethodController;
 
 /*
 |--------------------------------------------------------------------------
@@ -171,5 +172,7 @@ Route::post('/save-customer-in-session', function (Illuminate\Http\Request $requ
 
 Route::post('/orders', [PosController::class, 'store'])->name('orders.store');
 
+
+Route::resource('payment_methods', PaymentMethodController::class);
 
 require __DIR__.'/auth.php';

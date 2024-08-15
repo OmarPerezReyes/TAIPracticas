@@ -56,6 +56,17 @@
                 @endif
 
                 <hr>
+                @if (auth()->user()->can('employee.menu'))
+                    <li class="{{ Request::is(['payment-methods*']) ? 'active' : '' }}">
+                        <a href="{{ route('payment_methods.index') }}" class="svg-icon">
+                            <i class="fa-solid fa-credit-card"></i><span>Métodos de Pago</span>
+                        </a>
+                    </li>
+                @endif
+
+
+                <hr>
+
 
                 @if (auth()->user()->can('employee.menu'))
                     <li class="{{ Request::is('employees*') ? 'active' : '' }}">
